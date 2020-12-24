@@ -1,5 +1,11 @@
+import math
 import matplotlib.pyplot as plt
 import torch
+
+"""
+def entropy(x):
+    entropy = -mean(p(x)*log(p(x)))
+"""
 
 def get_moving_average(period, values):
     values = torch.tensor(values, dtype=torch.float)
