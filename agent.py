@@ -53,11 +53,13 @@ class TDA2CLearner:
         
     def calculate_gradients(self, actor_probs, actions, critic_vals, rewards, norm_returns):
         actor_losses, critic_losses = [], []
-        for e, probs, action, value, reward, disc_return in enumerate(zip(actor_probs, actions, critic_vals, rewards, norm_returns)):
-            td_advantage = reward + critic_vals[e+1].item() - value.item()
+        i = 0
+        for probs, action, value, reward, disc_return in zip(actor_probs, actions, critic_vals, rewards, norm_returns):
+            td_advantage = reward + critic_vals[min(i+1, len(rewards)-1)].item() - value.item()
             distribution = Normal(probs)
             actor_losses.append(-distribution.log_prob(action) * td_advantage)
             critic_losses.append(functional.smooth_l1_loss(value, torch.tensor([disc_return])))
+            i += 1
         actor_loss = torch.stack(actor_losses).sum()
         critic_loss = torch.stack(critic_losses).sum()
         return actor_loss, critic_loss
