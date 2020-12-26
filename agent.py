@@ -31,18 +31,19 @@ class TDA2CLearner:
         self.transitions.append(sarsdtuple)
         if sarsdtuple.done:
             states, actions, rewards, _, _ = zip(*self.transitions)
+            rewards = rewards[::-1]
             normalized_returns = self.normalize_returns(rewards)
             actions = torch.FloatTensor(actions).to(self.device)
             states = torch.FloatTensor(states).to(self.device)
             actor_probs, critic_vals = self.actor(states), self.critic(states)
-            actor_loss, critic_loss = self.calculate_gradients(actor_probs, actions, critic_vals, normalized_returns)
+            actor_loss, critic_loss = self.calculate_gradients(actor_probs, actions, critic_vals, rewards, normalized_returns)
             self.gradient_step(actor_loss, critic_loss)
         else:
             return None
     
     def normalize_returns(self, rewards):
         discounted_return, d_return_list = 0, []
-        for reward in rewards[::-1]:
+        for reward in rewards:
             discounted_return = reward + self.gamma*discounted_return
             d_return_list.append(discounted_return)
         discounted_returns = torch.FloatTensor(d_return_list).to(self.device)
@@ -50,12 +51,12 @@ class TDA2CLearner:
         normalized_returns /= discounted_returns.std()
         return normalized_returns
         
-    def calculate_gradients(self, actor_probs, actions, critic_vals, normalized_returns):
+    def calculate_gradients(self, actor_probs, actions, critic_vals, rewards, norm_returns):
         actor_losses, critic_losses = [], []
-        for probs, action, value, disc_return in zip(actor_probs, actions, critic_vals, normalized_returns):
-            advantage = disc_return - value.item()
+        for e, probs, action, value, reward, disc_return in enumerate(zip(actor_probs, actions, critic_vals, rewards, norm_returns)):
+            td_advantage = reward + critic_vals[e+1] - value.item()
             distribution = Normal(probs)
-            actor_losses.append(-distribution.log_prob(action) * advantage)
+            actor_losses.append(-distribution.log_prob(action) * td_advantage)
             critic_losses.append(functional.smooth_l1_loss(value, torch.tensor([disc_return])))
         actor_loss = torch.stack(actor_losses).sum()
         critic_loss = torch.stack(critic_losses).sum()
