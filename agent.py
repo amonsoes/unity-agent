@@ -10,7 +10,6 @@ class TDA2CLearner:
     
     def __init__(self, gamma, nr_actions, alpha, beta, observation_dim, hidden_dim):
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-        self.eps = np.finfo(np.float32).eps.item() # for what?
         self.gamma = gamma
         self.nr_actions = nr_actions
         self.alpha = alpha
