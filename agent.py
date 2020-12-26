@@ -25,14 +25,14 @@ class TDA2CLearner:
         distribution = Normal(mu, torch.exp(sigma))
         distribution.sample(sample_shape=torch.size([self.nr_actions]))
         
-    # ==== calculate update ====
+    # ==== Advantage A2C Algorithm ====
     
     def update(self, sarsdtuple):
         self.transitions.append(sarsdtuple)
         if sarsdtuple.done:
             states, actions, rewards, _, _ = zip(*self.transitions)
             normalized_returns = self.normalize_returns(rewards)
-            actions = torch.FloatTensor(actions).to(self.device) # do i need that?
+            actions = torch.FloatTensor(actions).to(self.device)
             states = torch.FloatTensor(states).to(self.device)
             actor_probs, critic_vals = self.actor(states), self.critic(states)
             actor_loss, critic_loss = self.calculate_gradients(actor_probs, actions, critic_vals, normalized_returns)
