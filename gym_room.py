@@ -4,6 +4,10 @@ import numpy as np
 import torchvision.transforms as trans
 
 import matplotlib.pyplot as plt
+from collections import namedtuple
+
+SARSD = namedtuple('SARSD', ['state', 'action', 'reward', 'next_state', 'done'])
+
 
 class GymRoom:
     
@@ -28,8 +32,9 @@ class GymRoom:
         return self.env.action_space.n
     
     def take_action(self, action):        
-        _, reward, self.done, _ = self.env.step(action.item())
-        return torch.tensor([reward], device=self.device)
+        state, action, reward, next_state, done = self.env.step(action.item())
+        return SARSD(state=state, action=action, reward=reward, next_state=next_state, done=done)
+        
     
     def just_starting(self):
         return self.current_screen is None
