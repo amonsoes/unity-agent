@@ -24,6 +24,10 @@ class TDA2CLearner:
         distribution = Normal(mu, torch.exp(sigma))
         distribution.sample(sample_shape=torch.size([self.nr_actions]))
         
+    def predict_policy(self, states):
+        states = torch.tensor(states, device=self.device, dtype=torch.float)
+        return self.actor(states)
+        
     # ==== Advantage A2C Algorithm ====
     
     def update(self, sarsdtuple):

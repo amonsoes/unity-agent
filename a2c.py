@@ -1,5 +1,5 @@
 import torch
-import torch.functional as F
+import torch.nn.functional as F
 
 from torch import nn
 
@@ -12,12 +12,12 @@ class FullyConnected(nn.Module):
         self.fc_in = nn.Linear(observation_dim, hidden_dim)
         self.fc_hidden = nn.Linear(hidden_dim, hidden_dim)
         self.fc_out = nn.Linear(hidden_dim, out_dim)
-        self.optimizer = torch.nn.optim.Adam(self.parameters(), lr)
+        self.optimizer = torch.optim.Adam(self.parameters(), lr)
         self.to(self.device)
         
     def forward(self, obs):
-        obs = F.relu(self.fc_in(obs))
-        obs = F.relu(self.fc_hidden(obs))
+        obs = F.leaky_relu(self.fc_in(obs))
+        obs = F.leaky_relu(self.fc_hidden(obs))
         out = self.fc_out(obs)
         return out if self.is_critic else F.softmax(out)
 

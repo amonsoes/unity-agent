@@ -1,8 +1,8 @@
-import gym
 import argparse
 import matplotlib.pyplot as plot
 
 from agent import TDA2CLearner
+from gym_room import GymRoom
 
 def episode(env, agent, nr_episode):
     state = env.reset()
@@ -11,7 +11,7 @@ def episode(env, agent, nr_episode):
     time_step = 0
     while not done:
         env.render()
-        action = agent.policy(state)
+        action = agent.sample_action(state)
         next_state, reward, done, _ = env.step(action)
         agent.update(state, action, reward, next_state, done)
         state = next_state
@@ -20,10 +20,10 @@ def episode(env, agent, nr_episode):
     print(nr_episode, ":", undiscounted_return)
     return undiscounted_return
 
-if __name__ == 'main':
+if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('env', type=str, help='specify the name of the env')
+    parser.add_argument('--env', type=str, default='CartPole-v1', help='specify the name of the env')
     parser.add_argument('--gamma', type=float, default=0.99, help='set the future rewards decay')
     parser.add_argument('--alpha', type=float, default=0.001, help='lr for actor')
     parser.add_argument('--beta', type=float, default=0.001, help='lr for critic')
@@ -31,12 +31,15 @@ if __name__ == 'main':
     parser.add_argument('--hidden_dim', type=int, default=600, help='set the dimension of the hidden layers in the a2c')
     args = parser.parse_args()
 
-    env = gym.make(args.env)
-    nr_actions = env.action_space.n
-    observation_dim = env.observation_space.shape[0]
+    room = GymRoom(args.env)
+    agent = TDA2CLearner(gamma=args.gamma, 
+                         nr_actions=room.env.action_space.n, 
+                         alpha=args.alpha, 
+                         beta=args.beta, 
+                         observation_dim=room.env.observation_space.shape[0], 
+                         hidden_dim=args.hidden_dim)
     
-    agent = TDA2CLearner(args.gamma, nr_actions, args.alpha, args.beta, observation_dim, args.hidden_dim)
-    returns = [episode(env, agent, i) for i in range(args.training_iter)]
+    returns = [episode(room.env, agent, i) for i in range(args.training_iter)]
 
     x = range(args.training_iter)
     y = returns

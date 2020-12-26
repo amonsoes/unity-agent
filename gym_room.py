@@ -11,8 +11,8 @@ SARSD = namedtuple('SARSD', ['state', 'action', 'reward', 'next_state', 'done'])
 
 class GymRoom:
     
-    def __init__(self, env_type, device):
-        self.device = device
+    def __init__(self, env_type):
+        self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         self.env = gym.make(env_type).unwrapped
         self.env.reset()
         self.current_screen = None
