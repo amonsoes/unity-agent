@@ -8,7 +8,6 @@ class FullyConnected(nn.Module):
     def __init__(self, observation_dim, hidden_dim, out_dim, lr):
         super().__init__()
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-        self.is_critic = True if out_dim == 1 else False
         self.fc_in = nn.Linear(observation_dim, hidden_dim)
         self.fc_hidden = nn.Linear(hidden_dim, hidden_dim)
         self.fc_out = nn.Linear(hidden_dim, out_dim)
@@ -16,8 +15,8 @@ class FullyConnected(nn.Module):
         self.to(self.device)
         
     def forward(self, obs):
-        obs = F.leaky_relu(self.fc_in(obs))
-        obs = F.leaky_relu(self.fc_hidden(obs))
+        obs = F.relu(self.fc_in(obs))
+        obs = F.relu(self.fc_hidden(obs))
         return self.fc_out(obs)
 
 if __name__ == '__main__':

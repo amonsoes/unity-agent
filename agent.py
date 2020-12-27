@@ -34,13 +34,9 @@ class TDA2CLearner:
         return action.item()
             
         
-    def predict_policy(self, states):
+    def predict(self, states):
         states = torch.tensor(states, device=self.device, dtype=torch.float)
-        return self.actor(states)
-    
-    def predict_value(self, states):
-        states = states = torch.tensor(states, device=self.device, dtype=torch.float)
-        return self.critic(states)
+        return self.actor(states), self.critic(states)
         
     # ==== Advantage A2C Algorithm ====
     
@@ -50,11 +46,12 @@ class TDA2CLearner:
             states, actions, rewards, _, _ = zip(*self.transitions)
             rewards = rewards[::-1]
             normalized_returns = self.normalize_returns(rewards)
-            actions = torch.FloatTensor(actions).to(self.device)
+            actions = torch.LongTensor(actions).to(self.device)
             states = torch.FloatTensor(states).to(self.device)
-            actor_probs, critic_vals = self.predict_policy(states), self.predict_value(states)
-            actor_loss, critic_loss = self.calculate_gradients(actor_probs, actions, critic_vals, rewards, normalized_returns)
-            self.gradient_step(actor_loss, critic_loss)
+            actor_probs, critic_vals = self.predict(states)
+            loss = self.calculate_gradients(actor_probs, actions, critic_vals, rewards, normalized_returns)
+            self.gradient_step(loss)
+            self.transitions.clear()
         else:
             return None
     
@@ -63,29 +60,28 @@ class TDA2CLearner:
         for reward in rewards:
             discounted_return = reward + self.gamma*discounted_return
             d_return_list.append(discounted_return)
-        discounted_returns = torch.FloatTensor(d_return_list).to(self.device)
+        discounted_returns = torch.FloatTensor(d_return_list).to(self.device).detach()
         normalized_returns = (discounted_returns - discounted_returns.mean())
         normalized_returns /= discounted_returns.std()
         return normalized_returns
         
     def calculate_gradients(self, actor_probs, actions, critic_vals, rewards, norm_returns):
+        self.actor.optimizer.zero_grad()
+        self.critic.optimizer.zero_grad()
         actor_losses, critic_losses = [], []
         i = 0
         for probs, action, value, reward, disc_return in zip(actor_probs, actions, critic_vals, rewards, norm_returns):
             td_advantage = reward + critic_vals[min(i+1, len(rewards)-1)].item() - value.item()
             distribution = Categorical(probs)
             actor_losses.append(-distribution.log_prob(action) * td_advantage)
+            #critic_losses.append(td_advantage**2)
             critic_losses.append(functional.smooth_l1_loss(value, torch.tensor([disc_return])))
             i += 1
-        actor_loss = torch.stack(actor_losses).sum()
-        critic_loss = torch.stack(critic_losses).sum()
-        return actor_loss, critic_loss
+        loss = torch.stack(actor_losses).sum() + torch.stack(critic_losses).sum()
+        return loss
         
-    def gradient_step(self, actor_loss, critic_loss):
-        self.actor.optimizer.zero_grad()
-        self.critic.optimizer.zero_grad()
-        actor_loss.backward()
-        critic_loss.backward()
+    def gradient_step(self, loss):
+        loss.backward()
         self.actor.optimizer.step()
         self.critic.optimizer.step()
     
