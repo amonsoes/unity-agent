@@ -18,8 +18,7 @@ class FullyConnected(nn.Module):
     def forward(self, obs):
         obs = F.leaky_relu(self.fc_in(obs))
         obs = F.leaky_relu(self.fc_hidden(obs))
-        out = self.fc_out(obs)
-        return out if self.is_critic else F.softmax(out)
+        return self.fc_out(obs)
 
 if __name__ == '__main__':
     pass

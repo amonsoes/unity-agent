@@ -1,32 +1,46 @@
 import torch
 import numpy as np
 
-from torch.distributions import Normal
+from torch.distributions import Normal, Categorical
 from torch.nn import functional
 from a2c import FullyConnected
 
 
 class TDA2CLearner:
     
-    def __init__(self, gamma, nr_actions, alpha, beta, observation_dim, hidden_dim):
+    def __init__(self, gamma, nr_actions, nr_outputs, alpha, beta, observation_dim, hidden_dim):
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         self.gamma = gamma
         self.nr_actions = nr_actions
+        self.nr_outputs = nr_outputs
         self.alpha = alpha
         self.beta = beta
         self.nr_input_features = observation_dim
         self.transitions = []
-        self.actor = FullyConnected(observation_dim, hidden_dim, nr_actions, alpha)
+        self.actor = FullyConnected(observation_dim, hidden_dim, 2, alpha)
         self.critic = FullyConnected(observation_dim, hidden_dim, 1, beta)
     
+    
     def sample_action(self, state):
-        mu, sigma = self.predict_policy([state])
+        """
+        mu, sigma = self.actor(state)
         distribution = Normal(mu, torch.exp(sigma))
-        distribution.sample(sample_shape=torch.size([self.nr_actions]))
+        probs = distribution.sample(sample_shape=torch.Size([self.nr_outputs]))
+        action = torch.tanh(probs) # change this line for your problem
+        """
+        out = self.actor(torch.FloatTensor(state).to(self.device))
+        dist = Categorical(functional.softmax(out))
+        action = dist.sample()
+        return action.item()
+            
         
     def predict_policy(self, states):
         states = torch.tensor(states, device=self.device, dtype=torch.float)
         return self.actor(states)
+    
+    def predict_value(self, states):
+        states = states = torch.tensor(states, device=self.device, dtype=torch.float)
+        return self.critic(states)
         
     # ==== Advantage A2C Algorithm ====
     
@@ -38,7 +52,7 @@ class TDA2CLearner:
             normalized_returns = self.normalize_returns(rewards)
             actions = torch.FloatTensor(actions).to(self.device)
             states = torch.FloatTensor(states).to(self.device)
-            actor_probs, critic_vals = self.actor(states), self.critic(states)
+            actor_probs, critic_vals = self.predict_policy(states), self.predict_value(states)
             actor_loss, critic_loss = self.calculate_gradients(actor_probs, actions, critic_vals, rewards, normalized_returns)
             self.gradient_step(actor_loss, critic_loss)
         else:
@@ -59,7 +73,7 @@ class TDA2CLearner:
         i = 0
         for probs, action, value, reward, disc_return in zip(actor_probs, actions, critic_vals, rewards, norm_returns):
             td_advantage = reward + critic_vals[min(i+1, len(rewards)-1)].item() - value.item()
-            distribution = Normal(probs)
+            distribution = Categorical(probs)
             actor_losses.append(-distribution.log_prob(action) * td_advantage)
             critic_losses.append(functional.smooth_l1_loss(value, torch.tensor([disc_return])))
             i += 1
@@ -77,6 +91,5 @@ class TDA2CLearner:
     
     # ======================
         
-
 if __name__ == '__main__':
     pass
