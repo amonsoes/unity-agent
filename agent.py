@@ -36,7 +36,7 @@ class TDA2CLearner:
         
     def predict(self, states):
         states = torch.tensor(states, device=self.device, dtype=torch.float)
-        return self.actor(states), self.critic(states)
+        return functional.softmax(self.actor(states)), self.critic(states)
         
     # ==== Advantage A2C Algorithm ====
     
@@ -47,7 +47,6 @@ class TDA2CLearner:
             rewards = rewards[::-1]
             normalized_returns = self.normalize_returns(rewards)
             actions = torch.LongTensor(actions).to(self.device)
-            states = torch.FloatTensor(states).to(self.device)
             actor_probs, critic_vals = self.predict(states)
             loss = self.calculate_gradients(actor_probs, actions, critic_vals, rewards, normalized_returns)
             self.gradient_step(loss)
@@ -60,6 +59,7 @@ class TDA2CLearner:
         for reward in rewards:
             discounted_return = reward + self.gamma*discounted_return
             d_return_list.append(discounted_return)
+        d_return_list.reverse()
         discounted_returns = torch.FloatTensor(d_return_list).to(self.device).detach()
         normalized_returns = (discounted_returns - discounted_returns.mean())
         normalized_returns /= discounted_returns.std()
@@ -77,7 +77,7 @@ class TDA2CLearner:
             #critic_losses.append(td_advantage**2)
             critic_losses.append(functional.smooth_l1_loss(value, torch.tensor([disc_return])))
             i += 1
-        loss = torch.stack(actor_losses).sum() + torch.stack(critic_losses).sum()
+        loss = torch.stack(actor_losses).sum() + sum(critic_losses)
         return loss
         
     def gradient_step(self, loss):
