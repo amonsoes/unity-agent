@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 
 from torch.distributions import Normal, Categorical
 from torch.nn import functional
@@ -77,7 +76,7 @@ class TDA2CLearner:
             #critic_losses.append(td_advantage**2)
             critic_losses.append(functional.smooth_l1_loss(value, torch.tensor([disc_return])))
             i += 1
-        loss = torch.stack(actor_losses).sum() + sum(critic_losses)
+        loss = torch.stack(actor_losses).sum() + torch.stack(critic_losses).sum()
         return loss
         
     def gradient_step(self, loss):

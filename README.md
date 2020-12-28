@@ -11,7 +11,7 @@ see requirements.txt
 #### Usage:
 
 ```
-python3 main.py --env CartPole-v1 --gamma 0.99 --nr_outputs 2 --alpha 0.0005 --beta 0.0001 --training_iter 2000 --hidden_dim 64
+python3 main.py --env CartPole-v1 --gamma 0.99 --nr_outputs 2 --alpha 0.0005 --beta 0.001 --training_iter 1500 --hidden_dim 64
 ```
 #### Args:
 
@@ -27,6 +27,9 @@ python3 main.py --env CartPole-v1 --gamma 0.99 --nr_outputs 2 --alpha 0.0005 --b
 
 In order for the agent to act in the environment Cartpole, the distribution over the actions is categorical for now.
 Change to Normal for more agnoistc agent.
+
+Best observed Hyperparams are stored in default params. Those need to change as soon as we deploy the algorithm to the
+new env.
 
 
 
