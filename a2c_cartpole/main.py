@@ -32,20 +32,26 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', type=float, default=0.0005, help='lr for actor')
     parser.add_argument('--beta', type=float, default=0.001, help='lr for critic')
     parser.add_argument('--training_iter', type=int, default=2000, help='set the number of training episodes for agent')
+    parser.add_argument('--dev_iter', type=int, default=20, help='set dev interations' )
     parser.add_argument('--hidden_dim', type=int, default=64, help='set the dimension of the hidden layers in the a2c')
     args = parser.parse_args()
-
-    room = GymRoom(args.env)
-    agent = TDA2CLearner(gamma=args.gamma, 
-                         nr_actions=room.num_actions_available(),
-                         nr_outputs= args.nr_outputs,
-                         alpha=args.alpha, 
-                         beta=args.beta, 
-                         observation_dim=room.env.observation_space.shape[0], 
-                         hidden_dim=args.hidden_dim)
     
-    returns = [episode(room.env, agent, i) for i in range(args.training_iter)]
+    def main():
+        room = GymRoom(args.env)
+        agent = TDA2CLearner(gamma=args.gamma, 
+                                nr_actions=room.num_actions_available(),
+                                nr_outputs= args.nr_outputs,
+                                alpha=args.alpha, 
+                                beta=args.beta, 
+                                observation_dim=room.env.observation_space.shape[0], 
+                                hidden_dim=args.hidden_dim)
 
+        returns = [episode(room.env, agent, i) for i in range(args.training_iter)]
+        evaluation = sum([episode(room.env, agent, i) for i in range(args.dev_iter)])
+        return returns, evaluation
+
+    returns, evaluation = main()
+    
     x = range(args.training_iter)
     y = returns
 
