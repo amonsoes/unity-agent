@@ -1,4 +1,9 @@
 import random
+import gym
+
+from a2c_cartpole import main
+from a2c_cartpole import gym_room as gr
+from a2c_cartpole import agent as a
 
 class Genome:
 
@@ -62,8 +67,25 @@ class A2CGenome(Genome):
         'hidden_dim':[32, 64, 128, 200, 300, 400, 512, 600, 700, 800, 900, 1024]
         }
     
+    room = None # before you call get_fitness for genome, set env with A2CGenome.room = GymRoom(env)
+    
+    
     def __init__(self,  genes, crossover_rate, mutation_rate):
         super().__init__(genes, crossover_rate, mutation_rate)
+    
+    def set_fitness(self):
+        agent = a.TDA2CLearner(gamma=self.genes['gamma'],
+                               nr_actions=A2CGenome.room.num_actions_available(),
+                               nr_outputs=2,
+                               alpha=self.genes['alpha'],
+                               beta=self.genes['beta'],
+                               observation_dim=A2CGenome.room.env.observation_space.shape[0],
+                               hidden_dim=self.genes['hidden_dim'])
+        _, evaluation = main.a2c_main(agent, A2CGenome.room)
+        self.fitness = evaluation
+        return evaluation
+        
+        
 
 if __name__ == '__main__':
     

@@ -2,7 +2,7 @@ import torch
 
 from torch.distributions import Normal, Categorical
 from torch.nn import functional
-from a2c import FullyConnected
+from a2c_cartpole.a2c import FullyConnected
 
 
 class TDA2CLearner:

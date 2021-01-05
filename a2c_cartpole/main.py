@@ -36,21 +36,21 @@ if __name__ == '__main__':
     parser.add_argument('--hidden_dim', type=int, default=64, help='set the dimension of the hidden layers in the a2c')
     args = parser.parse_args()
     
-    def main():
-        room = GymRoom(args.env)
-        agent = TDA2CLearner(gamma=args.gamma, 
-                                nr_actions=room.num_actions_available(),
-                                nr_outputs= args.nr_outputs,
-                                alpha=args.alpha, 
-                                beta=args.beta, 
-                                observation_dim=room.env.observation_space.shape[0], 
-                                hidden_dim=args.hidden_dim)
-
+    def a2c_main(agent, room):
         returns = [episode(room.env, agent, i) for i in range(args.training_iter)]
-        evaluation = sum([episode(room.env, agent, i) for i in range(args.dev_iter)])
+        evaluation = sum([episode(room.env, agent, i) for i in range(args.dev_iter)]) / args.dev_iter
         return returns, evaluation
 
-    returns, evaluation = main()
+    room = GymRoom(args.env)
+    agent = TDA2CLearner(gamma=args.gamma, 
+                            nr_actions=room.num_actions_available(),
+                            nr_outputs= args.nr_outputs,
+                            alpha=args.alpha, 
+                            beta=args.beta, 
+                            observation_dim=room.env.observation_space.shape[0], 
+                            hidden_dim=args.hidden_dim)
+    
+    returns, evaluation = a2c_main(agent, room)
     
     x = range(args.training_iter)
     y = returns
