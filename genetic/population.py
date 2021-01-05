@@ -2,7 +2,7 @@ from genetic.genome import A2CGenome
 
 class Population():
     
-    def __init__(self, species, size=None, crossover_rate=0.5, mutation_rate=0.015, maximize=True):
+    def __init__(self, species, size, crossover_rate=0.5, mutation_rate=0.015, maximize=True):
         self.species = species
         self.maximize = maximize
         self.population_size = size
@@ -27,5 +27,5 @@ class Population():
 
 if __name__ == '__main__':
 
-    a2c_population = Population(A2CGenome)
+    a2c_population = Population(A2CGenome, 20)
     print('population successfully tested')

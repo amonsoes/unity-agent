@@ -1,5 +1,4 @@
 import random
-import gym
 
 from a2c_cartpole import main
 from a2c_cartpole import gym_room as gr
@@ -67,7 +66,7 @@ class A2CGenome(Genome):
         'hidden_dim':[32, 64, 128, 200, 300, 400, 512, 600, 700, 800, 900, 1024]
         }
     
-    room = None # before you call get_fitness for genome, set env with A2CGenome.room = GymRoom(env)
+    room = gr.GymRoom('CartPole-v1') # before you call get_fitness for genome, set env with A2CGenome.room = GymRoom(env)
     
     
     def __init__(self,  genes, crossover_rate, mutation_rate):
