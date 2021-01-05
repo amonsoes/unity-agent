@@ -56,7 +56,6 @@ class Genome:
         individual_copy.fitness = self.fitness
         return individual_copy
 
-
 class A2CGenome(Genome):
     
     genome = {
@@ -67,7 +66,6 @@ class A2CGenome(Genome):
         }
     
     room = gr.GymRoom('CartPole-v1') # before you call get_fitness for genome, set env with A2CGenome.room = GymRoom(env)
-    
     
     def __init__(self,  genes, crossover_rate, mutation_rate):
         super().__init__(genes, crossover_rate, mutation_rate)
@@ -89,8 +87,6 @@ class A2CGenome(Genome):
         self.fitness = evaluation
         return evaluation
         
-        
-
 if __name__ == '__main__':
     
     
