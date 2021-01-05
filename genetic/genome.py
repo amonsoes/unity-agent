@@ -1,6 +1,6 @@
 import random
 
-from a2c_cartpole import main
+from a2c_cartpole import main as m
 from a2c_cartpole import gym_room as gr
 from a2c_cartpole import agent as a
 
@@ -83,7 +83,7 @@ class A2CGenome(Genome):
                                beta=self.genes['beta'],
                                observation_dim=A2CGenome.room.env.observation_space.shape[0],
                                hidden_dim=self.genes['hidden_dim'])
-        _, evaluation = main.a2c_main(agent, A2CGenome.room)
+        _, evaluation = m.a2c_main(agent, A2CGenome.room, 1000, 50)
         self.fitness = evaluation
         return evaluation
     

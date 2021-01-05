@@ -23,6 +23,11 @@ def episode(env, agent, nr_episode):
     print(nr_episode, ":", undiscounted_return)
     return undiscounted_return
 
+def a2c_main(agent, room, training_iter, dev_iter):
+    returns = [episode(room.env, agent, i) for i in range(training_iter)]
+    evaluation = sum([episode(room.env, agent, i) for i in range(dev_iter)]) / dev_iter
+    return returns, evaluation
+
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
@@ -35,11 +40,6 @@ if __name__ == '__main__':
     parser.add_argument('--dev_iter', type=int, default=20, help='set dev interations' )
     parser.add_argument('--hidden_dim', type=int, default=64, help='set the dimension of the hidden layers in the a2c')
     args = parser.parse_args()
-    
-    def a2c_main(agent, room):
-        returns = [episode(room.env, agent, i) for i in range(args.training_iter)]
-        evaluation = sum([episode(room.env, agent, i) for i in range(args.dev_iter)]) / args.dev_iter
-        return returns, evaluation
 
     room = GymRoom(args.env)
     agent = TDA2CLearner(gamma=args.gamma, 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
                             observation_dim=room.env.observation_space.shape[0], 
                             hidden_dim=args.hidden_dim)
     
-    returns, evaluation = a2c_main(agent, room)
+    returns, evaluation = a2c_main(agent, room, args.training_iter, args.dev_iter)
     
     x = range(args.training_iter)
     y = returns

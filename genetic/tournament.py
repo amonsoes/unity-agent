@@ -17,26 +17,26 @@ class GeneticAlgorithm:
 
     def evolve_population(self):
         print("Evaluating generation #{}...\n\n".format(self.generation))
-        fittest = self.population.get_fittest()
+        fittest = self.population.get_fittest()[0]
         print("Fittest individual is: \n")
         print(fittest.genes)
         print("Fitness value is: {}\n".format(round(fittest.fitness, 4)))
-        new_population = self.population.__class__(self.population.species, individual_list=[], maximize=self.population.maximize)
+        new_population = self.population.__class__(self.population.species, indiv_list=[], maximize=self.population.maximize)
         if self.elitism:
             [new_population.add_individual(i) for i in self.population.get_fittest(self.elite_size)]
-        while new_population.get_size() < self.population.get_size():
+        while new_population.population_size < self.population.population_size:
             child = self.tournament_select().reproduce(self.tournament_select())
             child.mutate()
             new_population.add_individual(child)
         self.population = new_population
 
     def tournament_select(self):
-        tournament = self.population(
-            self.population.species, individual_list=[
-                self.population[i] for i in random.sample(range(self.population.size), self.tournament_size)
+        tournament = self.population.__class__(
+            self.population.species, indiv_list=[
+                self.population[i] for i in random.sample(range(self.population.population_size), self.tournament_size)
             ], maximize=self.population.maximize
         )
-        return tournament.get_fittest()
+        return tournament.get_fittest()[0]
 
 if __name__ == '__main__':
     pass
