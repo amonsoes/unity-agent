@@ -1,4 +1,3 @@
-from genetic.genome import A2CGenome
 
 class Population():
     
@@ -6,7 +5,7 @@ class Population():
         self.species = species
         self.maximize = maximize
         self.population_size = size
-        self.individuals = [self.species(crossover_rate, mutation_rate) for _ in range(size)]
+        self.individuals = [self.species.random_init(crossover_rate, mutation_rate) for _ in range(size)]
         print("Initializing a random population. Size: {}".format(size))
 
     def add_individual(self, individual):
@@ -26,6 +25,4 @@ class Population():
         return self.individuals[item]
 
 if __name__ == '__main__':
-
-    a2c_population = Population(A2CGenome, 20)
-    print('population successfully tested')
+    pass

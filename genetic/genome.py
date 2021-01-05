@@ -72,6 +72,11 @@ class A2CGenome(Genome):
     def __init__(self,  genes, crossover_rate, mutation_rate):
         super().__init__(genes, crossover_rate, mutation_rate)
     
+    @classmethod
+    def random_init(cls, crossover_rate, mutation_rate):
+        genes = {k:random.choice(cls.genome[k]) for k in cls.genome.keys()}
+        return cls(genes, crossover_rate, mutation_rate)
+    
     def set_fitness(self):
         agent = a.TDA2CLearner(gamma=self.genes['gamma'],
                                nr_actions=A2CGenome.room.num_actions_available(),
