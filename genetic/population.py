@@ -1,3 +1,5 @@
+from genetic.genome import A2CGenome
+
 class Population():
     
     def __init__(self, species, size=None, crossover_rate=0.5, mutation_rate=0.015, maximize=True):
@@ -22,3 +24,8 @@ class Population():
 
     def __getitem__(self, item):
         return self.individuals[item]
+
+if __name__ == '__main__':
+
+    a2c_population = Population(A2CGenome)
+    print('population successfully tested')
