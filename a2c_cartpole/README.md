@@ -4,7 +4,7 @@
 
 see requirements.txt
 
-### Agent
+### Agents
 
 1st Version is an asyncronous A2C algorithm with temporal difference advantage.
 
@@ -30,6 +30,25 @@ Change to Normal for more agnoistc agent.
 
 Best observed Hyperparams are stored in default params. Those need to change as soon as we deploy the algorithm to the
 new env.
+
+### Hyperparameter Optimization
+
+In genetic, there is the class functionality to find the best hyperparams for an env and agent.
+The best HP's will be saved at: **./best_hyperparams.txt**
+
+```
+python3 find_best_hyperparams.py species --pop_size 50 --cross_rate 0.3 --mut_rate 0.015 --elitism True --elite_size 3 --maximize True --gen_epochs 7
+```
+
+#### args:
+
+- species : A2C or PPO
+- cross_rate : set with what prob individuals cross their genes
+- mut_rate : set with what prob individuals mutate
+- elitism : set if good indivs progress generations without tournament
+- elite_size : how many of those progress w/o tournament
+- maximize : maximize fitness=True or minimize=False
+- gen_epochs: set the generation number
 
 
 
