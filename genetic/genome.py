@@ -86,6 +86,11 @@ class A2CGenome(Genome):
         _, evaluation = main.a2c_main(agent, A2CGenome.room)
         self.fitness = evaluation
         return evaluation
+    
+class PPOGenome:
+    
+    # TODO: Build PPO Genome Class
+    pass
         
 if __name__ == '__main__':
     
