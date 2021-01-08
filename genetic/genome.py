@@ -132,6 +132,13 @@ class PPOGenome:
         
 if __name__ == '__main__':
     
+    if os.path.isdir('tmp')==False:
+        os.mkdir('tmp')
+        os.mkdir('tmp/ppo')
+    elif os.path.isdir('tmp/ppo')==False:
+        os.mkdir('tmp/ppo')
+    if os.path.isdir('plots')==False:
+        os.mkdir('plots')
     
     genes = {'gamma' : 0.99, 'alpha' : 0.0005, 'beta': 0.001, 'hidden_dim': 64}
     genes2 = {'gamma' : 0.98, 'alpha' : 0.0001, 'beta': 0.003, 'hidden_dim': 128}
