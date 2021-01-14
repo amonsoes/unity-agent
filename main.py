@@ -6,7 +6,7 @@ from ppo_torch import Agent
 from utils import plot_learning_curve
 
 def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes):
-    env = gym.make('CartPole-v0')
+    env = gym.make(env)
     env.score_history = []
     figure_file = 'plots/cartpole.png'
     
