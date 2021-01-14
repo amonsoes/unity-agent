@@ -124,7 +124,7 @@ class Agent:
         self.memory = PPOMemory(batch_size)
         
         # i put nr_steps, n_learning_iters also to agent, in order to clean main
-        self.nr_steps = 0
+        self.n_steps = 0
         self.learn_iters = 0
 
     def remember(self, state, action, probs, vals, reward, done):

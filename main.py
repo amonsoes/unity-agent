@@ -1,16 +1,17 @@
 import gym
 import numpy as np
 import argparse
+import os
 from ppo_torch import Agent
 from utils import plot_learning_curve
 
-def main(N, batch_size, n_epochs, alpha, n_episodes):
+def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes):
     env = gym.make('CartPole-v0')
     env.score_history = []
     figure_file = 'plots/cartpole.png'
     
     agent = Agent(n_actions=env.action_space.n, batch_size=batch_size,
-                alpha=alpha, n_epochs=n_epochs,
+                alpha=alpha, beta=beta, n_epochs=n_epochs,
                 input_dims=env.observation_space.shape)
     
     best_score = env.reward_range[0]
@@ -48,8 +49,26 @@ def episode(env, agent, N):
 
 if __name__ == '__main__':
     
+    if os.path.isdir('tmp')==False:
+        os.mkdir('tmp')
+        os.mkdir('tmp/ppo')
+    elif os.path.isdir('tmp/ppo')==False:
+        os.mkdir('tmp/ppo')
+    if os.path.isdir('plots')==False:
+        os.mkdir('plots')
     
+    parser = argparse.ArgumentParser()
+    parser.add_argument('env', type=str)
+    parser.add_argument('--batch_size', default=5, type=int)
+    parser.add_argument('--N', default=5, type=int)
+    parser.add_argument('--n_epochs', default=4, type=int)
+    parser.add_argument('--n_episodes', default=300,  type=int)
+    parser.add_argument('--alpha', default=0.0005, type=float)
+    parser.add_argument('--beta', default=0.001, type=float)
+    args = parser.parse_args()
     
+    main(args.env, args.N, args.batch_size, args.n_epochs, args.alpha, args.beta, args.n_episodes)
+
     """
     env = gym.make('CartPole-v0')
     N = 20
