@@ -95,9 +95,8 @@ class A2CGenome(Genome):
     
 class PPOGenome:
     
-    
     genome = {
-        'gamma': [0.99, 0.98, 0.97, 0.96, 0.95, 0.94, 0.93, 0.92, 0.91, 0.90], 
+        'gamma': [0.99, 0.98, 0.97, 0.96, 0.95], 
         'alpha': [0.000001, 0.000005, 0.000007, 0.00001, 0.00005, 0.00007, 0.0001, 0.0005, 0.0007, 0.001, 0.005, 0.007, 0.01, 0.05, 0.07], 
         'beta': [0.000001, 0.000005, 0.000007, 0.00001, 0.00005, 0.00007, 0.0001, 0.0005, 0.0007, 0.001, 0.005, 0.007, 0.01, 0.05, 0.07], 
         'n_epochs':[5, 10, 12, 16, 20, 25, 30, 35], 
@@ -132,14 +131,6 @@ class PPOGenome:
         return evaluation
         
 if __name__ == '__main__':
-    
-    if os.path.isdir('tmp')==False:
-        os.mkdir('tmp')
-        os.mkdir('tmp/ppo')
-    elif os.path.isdir('tmp/ppo')==False:
-        os.mkdir('tmp/ppo')
-    if os.path.isdir('plots')==False:
-        os.mkdir('plots')
     
     genes = {'gamma' : 0.99, 'alpha' : 0.0005, 'beta': 0.001, 'hidden_dim': 64}
     genes2 = {'gamma' : 0.98, 'alpha' : 0.0001, 'beta': 0.003, 'hidden_dim': 128}

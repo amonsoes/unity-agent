@@ -6,6 +6,15 @@ from ppo_torch import Agent
 from utils import plot_learning_curve
 
 def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes):
+    
+    if os.path.isdir('tmp')==False:
+        os.mkdir('tmp')
+        os.mkdir('tmp/ppo')
+    elif os.path.isdir('tmp/ppo')==False:
+        os.mkdir('tmp/ppo')
+    if os.path.isdir('plots')==False:
+        os.mkdir('plots')
+        
     env = gym.make(env)
     env.score_history = []
     figure_file = 'plots/cartpole.png'
@@ -48,14 +57,6 @@ def episode(env, agent, N):
     
 
 if __name__ == '__main__':
-    
-    if os.path.isdir('tmp')==False:
-        os.mkdir('tmp')
-        os.mkdir('tmp/ppo')
-    elif os.path.isdir('tmp/ppo')==False:
-        os.mkdir('tmp/ppo')
-    if os.path.isdir('plots')==False:
-        os.mkdir('plots')
     
     parser = argparse.ArgumentParser()
     parser.add_argument('env', type=str)
