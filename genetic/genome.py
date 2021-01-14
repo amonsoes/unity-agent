@@ -1,10 +1,11 @@
 import random
+import os
 
 from a2c_cartpole import main as a2c_main
 from a2c_cartpole import gym_room as gr
 from a2c_cartpole import agent as a2c
-from ppo_cartpole import ppo_torch as ppo
-from ppo_cartpole import main as ppo_main
+import ppo_torch as ppo
+import main as ppo_main
 
 # from ppo_cartpole import main as ppo_main
 # from ppo_cartpole import agent as ppo

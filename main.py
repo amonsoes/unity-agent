@@ -1,9 +1,56 @@
 import gym
 import numpy as np
+import argparse
 from ppo_torch import Agent
 from utils import plot_learning_curve
 
+def main(N, batch_size, n_epochs, alpha, n_episodes):
+    env = gym.make('CartPole-v0')
+    env.score_history = []
+    figure_file = 'plots/cartpole.png'
+    
+    agent = Agent(n_actions=env.action_space.n, batch_size=batch_size,
+                alpha=alpha, n_epochs=n_epochs,
+                input_dims=env.observation_space.shape)
+    
+    best_score = env.reward_range[0]
+    learn_iters, avg_score, n_steps = 0, 0, 0
+    
+    for i in range(n_episodes):
+        score, avg_score = episode(env, agent, N)
+        if avg_score > best_score:
+            best_score = avg_score
+            agent.save_models()
+        print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score,
+                'time_steps', n_steps, 'learning_steps', learn_iters)
+    
+    x = [i+1 for i in range(len(env.score_history))]
+    plot_learning_curve(x, env.score_history, figure_file)
+
+def episode(env, agent, N):
+    observation = env.reset()
+    done = False
+    score = 0
+    while not done:
+        action, prob, val = agent.choose_action(observation)
+        observation_, reward, done, _ = env.step(action)
+        agent.n_steps += 1
+        score += reward
+        agent.remember(observation, action, prob, val, reward, done)
+        if agent.n_steps % N == 0:
+            agent.learn()
+            agent.learn_iters += 1
+        observation = observation_
+    env.score_history.append(score)
+    avg_score = np.mean(env.score_history[-100:])
+    return score, avg_score
+    
+
 if __name__ == '__main__':
+    
+    
+    
+    """
     env = gym.make('CartPole-v0')
     N = 20
     batch_size = 5
@@ -12,7 +59,7 @@ if __name__ == '__main__':
     agent = Agent(n_actions=env.action_space.n, batch_size=batch_size,
                     alpha=alpha, n_epochs=n_epochs,
                     input_dims=env.observation_space.shape)
-    n_games = 300
+    n_episodes = 300
 
     figure_file = 'plots/cartpole.png'
 
@@ -23,7 +70,7 @@ if __name__ == '__main__':
     avg_score = 0
     n_steps = 0
 
-    for i in range(n_games):
+    for i in range(n_episodes):
         observation = env.reset()
         done = False
         score = 0
@@ -48,3 +95,4 @@ if __name__ == '__main__':
                 'time_steps', n_steps, 'learning_steps', learn_iters)
     x = [i+1 for i in range(len(score_history))]
     plot_learning_curve(x, score_history, figure_file)
+    """

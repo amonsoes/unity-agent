@@ -22,7 +22,8 @@ class PPOMemory:
         batch_start = np.arange(0, n_states, self.batch_size)
         indices = np.arange(n_states, dtype=np.int64)
         np.random.shuffle(indices)
-        batches = [indices[i:i + self.batch_size] for i in batch_start]
+        batches = [indices[i:i + self.batch_size] for i in batch_start[:-1]]
+        batches.append(indices[batch_start[-1]:])
 
         return np.array(self.states), \
                np.array(self.actions), \
@@ -112,16 +113,19 @@ class CriticNetwork(nn.Module):
 
 
 class Agent:
-    def __init__(self, n_actions, input_dims, gamma=0.99, alpha=0.0003, gae_lambda=0.95,
+    def __init__(self, n_actions, input_dims, gamma=0.99, alpha=0.0003, beta=0.0003, gae_lambda=0.95,
                  policy_clip=0.2, batch_size=64, n_epochs=10):
         self.gamma = gamma
         self.policy_clip = policy_clip
         self.n_epochs = n_epochs
         self.gae_lambda = gae_lambda
-
         self.actor = ActorNetwork(n_actions, input_dims, alpha)
-        self.critic = CriticNetwork(input_dims, alpha)
+        self.critic = CriticNetwork(input_dims, beta)
         self.memory = PPOMemory(batch_size)
+        
+        # i put nr_steps, n_learning_iters also to agent, in order to clean main
+        self.nr_steps = 0
+        self.learn_iters = 0
 
     def remember(self, state, action, probs, vals, reward, done):
         self.memory.store_memory(state, action, probs, vals, reward, done)
