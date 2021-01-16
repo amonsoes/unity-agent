@@ -1,5 +1,4 @@
 import random
-import os
 
 from a2c_cartpole import main as a2c_main
 from a2c_cartpole import gym_room as gr

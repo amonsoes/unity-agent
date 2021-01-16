@@ -3,7 +3,7 @@ import numpy as np
 import torch as T
 import torch.nn as nn
 import torch.optim as optim
-from torch.distributions.categorical import Categorical
+from torch.distributions import Categorical, Normal
 
 
 class PPOMemory:
@@ -51,7 +51,7 @@ class PPOMemory:
 
 
 class ActorNetwork(nn.Module):
-    def __init__(self, n_actions, input_dims, alpha,
+    def __init__(self, n_outs, input_dims, alpha,
                  fc1_dims=256, fc2_dims=256, chkpt_dir='tmp/ppo'):
         super(ActorNetwork, self).__init__()
 
@@ -61,7 +61,7 @@ class ActorNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(fc1_dims, fc2_dims),
             nn.ReLU(),
-            nn.Linear(fc2_dims, n_actions),
+            nn.Linear(fc2_dims, n_outs),
             nn.Softmax(dim=-1)
         )
 
@@ -70,6 +70,8 @@ class ActorNetwork(nn.Module):
         self.to(self.device)
 
     def forward(self, state):
+        # turn to continous
+        
         dist = self.actor(state)
         dist = Categorical(dist)
 
@@ -119,7 +121,7 @@ class Agent:
         self.policy_clip = policy_clip
         self.n_epochs = n_epochs
         self.gae_lambda = gae_lambda
-        self.actor = ActorNetwork(n_actions, input_dims, alpha)
+        self.actor = ActorNetwork(2, input_dims, alpha) # 2= mu, sigma for Normal
         self.critic = CriticNetwork(input_dims, beta)
         self.memory = PPOMemory(batch_size)
         
