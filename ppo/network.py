@@ -27,10 +27,8 @@ class ActorNetwork(nn.Module):
     def forward(self, state):
         # turn to continous      
         mu, sigma = self.actor(state)
-        distribution = Normal(mu, T.exp(sigma)) # T.exp(sigma) because sigma can't be a negative value
-        probs = distribution.sample(sample_shape=T.Size([self.nr_outputs]))
-        action = T.tanh(probs) # change this line for your problem
-        return action
+        dist = Normal(mu, T.exp(sigma)) # T.exp(sigma) because sigma can't be a negative value
+        return dist
         """
         dist = self.actor() # include softmax on actor network to make that work
         dist = Categorical(dist)
