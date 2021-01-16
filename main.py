@@ -2,8 +2,11 @@ import gym
 import numpy as np
 import argparse
 import os
-from ppo_torch import Agent
+
+from ppo import Agent
 from utils import plot_learning_curve
+
+from gym_unity.envs import UnityToGymWrapper
 
 def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes):
     
@@ -69,6 +72,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     main(args.env, args.N, args.batch_size, args.n_epochs, args.alpha, args.beta, args.n_episodes)
+
 
     """
     env = gym.make('CartPole-v0')
