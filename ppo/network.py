@@ -20,7 +20,7 @@ class ActorNetwork(nn.Module):
             nn.Linear(fc2_dims, n_outs),
         )
 
-        self.optimizer = optim.Adam(self.parameters(), lr=alpha)
+        self.optimizer = optim.Adam(self.parameters(), lr=alpha) if alpha != 0.0 else optim.Adam(self.parameters())
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
         self.to(self.device)
 
@@ -44,7 +44,7 @@ class ActorNetwork(nn.Module):
 
 
 class CriticNetwork(nn.Module):
-    def __init__(self, input_dims, alpha, fc1_dims=256, fc2_dims=256,
+    def __init__(self, input_dims, beta, fc1_dims=256, fc2_dims=256,
                  chkpt_dir='tmp/ppo'):
         super(CriticNetwork, self).__init__()
 
@@ -57,13 +57,12 @@ class CriticNetwork(nn.Module):
             nn.Linear(fc2_dims, 1)
         )
 
-        self.optimizer = optim.Adam(self.parameters(), lr=alpha)
+        self.optimizer = optim.Adam(self.parameters(), lr=beta) if beta != 0.0 else optim.Adam(self.parameters())
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
         self.to(self.device)
 
     def forward(self, state):
         value = self.critic(state)
-
         return value
 
     def save_checkpoint(self):
