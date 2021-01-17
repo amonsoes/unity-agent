@@ -8,7 +8,7 @@ from utils import plot_learning_curve
 
 from gym_unity.envs import UnityToGymWrapper
 
-def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes):
+def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes):
     
     if os.path.isdir('tmp')==False:
         os.mkdir('tmp')
@@ -22,9 +22,14 @@ def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes):
     env.score_history = []
     figure_file = 'plots/cartpole.png'
     
-    agent = Agent(n_actions=env.action_space.n, batch_size=batch_size,
-                alpha=alpha, beta=beta, n_epochs=n_epochs,
-                input_dims=env.observation_space.shape)
+    agent = Agent(n_actions=env.action_space.n,
+                batch_size=batch_size,
+                alpha=alpha,
+                beta=beta,
+                n_epochs=n_epochs,
+                input_dims=env.observation_space.shape,
+                gae_lambda=gae_lambda,
+                policy_clip=policy_clip)
     
     best_score = env.reward_range[0]
     learn_iters, avg_score, n_steps = 0, 0, 0
@@ -38,6 +43,8 @@ def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes):
                 'time_steps', n_steps, 'learning_steps', learn_iters)
     
     x = [i+1 for i in range(len(env.score_history))]
+    
+    dev_evaluation = dev_evaluate(env, agent, N, dev_episodes)
     plot_learning_curve(x, env.score_history, figure_file)
 
 def episode(env, agent, N):
@@ -57,8 +64,15 @@ def episode(env, agent, N):
     env.score_history.append(score)
     avg_score = np.mean(env.score_history[-100:])
     return score, avg_score
-    
 
+def dev_evaluate(env, agent, N, dev_episodes):
+    scores = []
+    for _ in range(dev_episodes):
+        score, _ = episode(env, agent, N)
+        scores.append(score)
+    return sum(scores) / dev_episodes
+        
+        
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
@@ -67,56 +81,20 @@ if __name__ == '__main__':
     parser.add_argument('--N', default=5, type=int)
     parser.add_argument('--n_epochs', default=4, type=int)
     parser.add_argument('--n_episodes', default=300,  type=int)
-    parser.add_argument('--alpha', default=0.0005, type=float)
-    parser.add_argument('--beta', default=0.001, type=float)
+    parser.add_argument('--alpha', default=0.0, type=float)
+    parser.add_argument('--beta', default=0.0, type=float)
+    parser.add_argument('--policy_clip', default=0.2, type=float)
+    parser.add_argument('--gae_lambda', default=0.95, type=float)
+    parser.add_argument('--dev_episodes', default=50, type=int)
     args = parser.parse_args()
     
-    main(args.env, args.N, args.batch_size, args.n_epochs, args.alpha, args.beta, args.n_episodes)
-
-
-    """
-    env = gym.make('CartPole-v0')
-    N = 20
-    batch_size = 5
-    n_epochs = 4
-    alpha = 0.0003
-    agent = Agent(n_actions=env.action_space.n, batch_size=batch_size,
-                    alpha=alpha, n_epochs=n_epochs,
-                    input_dims=env.observation_space.shape)
-    n_episodes = 300
-
-    figure_file = 'plots/cartpole.png'
-
-    best_score = env.reward_range[0]
-    score_history = []
-
-    learn_iters = 0
-    avg_score = 0
-    n_steps = 0
-
-    for i in range(n_episodes):
-        observation = env.reset()
-        done = False
-        score = 0
-        while not done:
-            action, prob, val = agent.choose_action(observation)
-            observation_, reward, done, info = env.step(action)
-            n_steps += 1
-            score += reward
-            agent.remember(observation, action, prob, val, reward, done)
-            if n_steps % N == 0:
-                agent.learn()
-                learn_iters += 1
-            observation = observation_
-        score_history.append(score)
-        avg_score = np.mean(score_history[-100:])
-
-        if avg_score > best_score:
-            best_score = avg_score
-            agent.save_models()
-
-        print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score,
-                'time_steps', n_steps, 'learning_steps', learn_iters)
-    x = [i+1 for i in range(len(score_history))]
-    plot_learning_curve(x, score_history, figure_file)
-    """
+    main(args.env,
+         args.N,
+         args.batch_size,
+         args.n_epochs,
+         args.alpha,
+         args.beta,
+         args.n_episodes,
+         args.gae_lambda,
+         args.policy_clip,
+         args.dev_episodes)
