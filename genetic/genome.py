@@ -3,7 +3,7 @@ import random
 from a2c_cartpole import main as a2c_main
 from a2c_cartpole import gym_room as gr
 from a2c_cartpole import agent as a2c
-import ppo_torch as ppo
+import ppo
 import main as ppo_main
 
 # from ppo_cartpole import main as ppo_main
@@ -96,12 +96,12 @@ class PPOGenome:
     
     genome = {
         'gamma': [0.99, 0.98, 0.97, 0.96, 0.95], 
-        'alpha': [0.000001, 0.000005, 0.000007, 0.00001, 0.00005, 0.00007, 0.0001, 0.0005, 0.0007, 0.001, 0.005, 0.007, 0.01, 0.05, 0.07], 
-        'beta': [0.000001, 0.000005, 0.000007, 0.00001, 0.00005, 0.00007, 0.0001, 0.0005, 0.0007, 0.001, 0.005, 0.007, 0.01, 0.05, 0.07], 
         'n_epochs':[5, 10, 12, 16, 20, 25, 30, 35], 
         'gae_lambda' : [0.90, 0.92, 0.94, 0.96, 0.98],
         'memory_batchsize': [5, 10, 16, 32, 64, 128],
-        'policy_clip' : [0.1, 0.2, 0.3, 0.4]
+        'policy_clip' : [0.1, 0.2, 0.3, 0.4],
+        'n_episodes' : [128, 256, 512, 700, 900],
+        'N' : [3, 5, 10, 15]
         }
     
     room = gr.GymRoom('CartPole-v1')
@@ -119,13 +119,20 @@ class PPOGenome:
                           input_dims=PPOGenome.room.env.observation_space.shape[0],
                           gamma=self.genes['gamma'],
                           gae_lambda=genes['gae_lambda'],
-                          alpha=self.genes['alpha'],
-                          beta=self.genes['beta'],
                           policy_clip=genes['policy_clip'],
                           batch_size=genes['memory_batchsize'],
                           n_epochs=genes['n_epochs'])
                             
-        _, evaluation = ppo_main.ppo_main(agent, A2CGenome.room, 1000, 50)
+        evaluation = ppo_main.main(PPOGenome.room,
+                                   genes['N'],
+                                   n_epochs=genes['n_epochs'],
+                                   batch_size=genes['memory_batchsize'],
+                                   alpha=0.0,
+                                   beta=0.0,
+                                   n_episodes=genes['n_episodes'],
+                                   gae_lambda=genes['gae_lambda'],
+                                   policy_clip=genes['policy_clip'],
+                                   dev_episodes=50)
         self.fitness = evaluation
         return evaluation
         
