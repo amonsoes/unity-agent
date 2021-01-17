@@ -46,6 +46,7 @@ def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lambda, poli
     
     dev_evaluation = dev_evaluate(env, agent, N, dev_episodes)
     plot_learning_curve(x, env.score_history, figure_file)
+    return dev_evaluation
 
 def episode(env, agent, N):
     observation = env.reset()
