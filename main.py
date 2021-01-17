@@ -76,6 +76,13 @@ def dev_evaluate(env, agent, N, dev_episodes):
         
 if __name__ == '__main__':
     
+    # by default, alpha & beta will be set to 0.0
+    # which will result in an empty lr pass to the adam
+    # optimizer in both actor & critic, so it adjust
+    # the lr automatically (do not optimize)
+    
+    # However if wished, lr can be set manually
+    
     parser = argparse.ArgumentParser()
     parser.add_argument('env', type=str)
     parser.add_argument('--batch_size', default=5, type=int)
