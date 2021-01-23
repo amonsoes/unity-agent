@@ -4,6 +4,7 @@ from ppo_torch import Agent
 from utils import plot_learning_curve
 import mlagents
 from mlagents_envs.environment import UnityEnvironment as UE
+from gym_unity.envs import UnityToGymWrapper
 import os.path
 
 def episode(env, agent, nr_episode):
@@ -57,16 +58,18 @@ if __name__ == '__main__':
         os.mkdir('plots')
 
     env = UE(file_name='UnityEnvironment', seed=1, side_channels=[])
+   
 
     env.reset()
     
     behavior_name = list(env.behavior_specs)[0]
     spec = env.behavior_specs[behavior_name]
-    print(spec)
-    observation_spec = spec.oberservation_shapes
-    print(observation_spec)
     actions = len(spec.action_spec)
 
+    print("Number of observations : ", len(spec.observation_shapes))
+    print("Observation vector shape: ", spec.observation_shapes)
+
+    inputdims = [x[0] for x in spec.observation_shapes]
 
     N = 20
     batch_size = 5
@@ -75,7 +78,7 @@ if __name__ == '__main__':
     beta=0.0003
     agent = Agent(n_actions= actions, batch_size=batch_size,
                     alpha=alpha,beta=beta,n_epochs=n_epochs,
-                    input_dims=spec.observation_shape)
+                    input_dims=inputdims)
     n_games = 300
 
     #figure_file = 'plots/cartpole.png'
