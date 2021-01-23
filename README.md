@@ -93,6 +93,24 @@ python3 find_best_hyperparams.py species --pop_size 50 --cross_rate 0.3 --mut_ra
 - gen_epochs: set the generation number
 
 
+###Unity Environment
+
+Version: Unity 2019.4.18f1
+
+For Python API:
+
+```
+pip install mlagents==0.23.0
+```
+
+For GymWrapper
+
+```
+pip install gym-unity==0.22.0
+```
+
+
+
 ### Resources
 
 https://github.com/Unity-Technologies/ml-agents/blob/master/docs/ML-Agents-Overview.md

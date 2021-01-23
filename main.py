@@ -9,6 +9,8 @@ from utils import plot_learning_curve
 from gym_unity.envs import UnityToGymWrapper
 
 def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes):
+
+    unity_env = +
     
     if os.path.isdir('tmp')==False:
         os.mkdir('tmp')
