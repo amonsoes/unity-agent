@@ -2,6 +2,8 @@ import gym
 import numpy as np
 from ppo_torch import Agent
 from utils import plot_learning_curve
+import mlagents
+from mlagents_envs.environment import UnityEnvironment as UE
 import os.path
 
 def episode(env, agent, nr_episode):
@@ -54,18 +56,29 @@ if __name__ == '__main__':
     if os.path.isdir('plots')==False:
         os.mkdir('plots')
 
-    env = gym.make('CartPole-v0')
+    env = UE(file_name='UnityEnvironment', seed=1, side_channels=[])
+
+    env.reset()
+    
+    behavior_name = list(env.behavior_specs)[0]
+    spec = env.behavior_specs[behavior_name]
+    print(spec)
+    observation_spec = spec.oberservation_shapes
+    print(observation_spec)
+    actions = len(spec.action_spec)
+
+
     N = 20
     batch_size = 5
     n_epochs = 4
     alpha = 0.0003
     beta=0.0003
-    agent = Agent(n_actions=env.action_space.n, batch_size=batch_size,
+    agent = Agent(n_actions= actions, batch_size=batch_size,
                     alpha=alpha,beta=beta,n_epochs=n_epochs,
-                    input_dims=env.observation_space.shape)
+                    input_dims=spec.observation_shape)
     n_games = 300
 
-    figure_file = 'plots/cartpole.png'
+    #figure_file = 'plots/cartpole.png'
 
     best_score = env.reward_range[0]
     score_history = []
@@ -75,6 +88,8 @@ if __name__ == '__main__':
     n_steps = 0
 
     for i in range(n_games):
+
+        decision_steps, terminal_steps = env.get_steps(behavior_name)
         observation = env.reset()
         done = False
         score = 0
