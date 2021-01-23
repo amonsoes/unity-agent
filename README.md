@@ -93,7 +93,7 @@ python3 find_best_hyperparams.py species --pop_size 50 --cross_rate 0.3 --mut_ra
 - gen_epochs: set the generation number
 
 
-###Unity Environment
+### Unity Environment
 
 Version: Unity 2019.4.18f1
 
@@ -107,6 +107,20 @@ For GymWrapper
 
 ```
 pip install gym-unity==0.22.0
+```
+
+Imports:
+
+```
+import mlagents
+from mlagents_envs.environment import UnityEnvironment as UE
+```
+
+Start Enviornment as follows:
+
+```
+env = UE(file_name='crawler_linux\Crawler', seed=1, side_channels=[])
+env.reset()
 ```
 
 
