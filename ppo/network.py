@@ -41,7 +41,7 @@ class ActorNetwork(nn.Module):
 
 
 class CriticNetwork(nn.Module):
-    def __init__(self, input_dims, out_dim, beta, fc1_dims=256, fc2_dims=256,
+    def __init__(self, input_dims, beta, fc1_dims=256, fc2_dims=256,
                  chkpt_dir='tmp/ppo'):
         super(CriticNetwork, self).__init__()
 
@@ -51,7 +51,7 @@ class CriticNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(fc1_dims, fc2_dims),
             nn.ReLU(),
-            nn.Linear(fc2_dims, out_dim)
+            nn.Linear(fc2_dims, 1)
         )
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta) if beta != 0.0 else optim.Adam(self.parameters())
