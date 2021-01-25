@@ -92,6 +92,21 @@ python3 find_best_hyperparams.py species --pop_size 50 --cross_rate 0.3 --mut_ra
 - maximize : maximize fitness=True or minimize=False
 - gen_epochs: set the generation number
 
+### Crawler
+
+A 3D unity continous environment from Unity ML-Agents.
+
+#### Parameters:
+
+- observation space : Real valued vector with 172 parameters
+- action space : Real valued vector with 20 parameters
+- Agent Reward Function (independent): The reward function is geometric (normalized products of all rewards)
+
+
+For every parameter, the actor networks builds a Normal Distribution on
+a mu and sigma, which are the outputs of the actor network in our PPO agent.
+
+
 
 ### Resources
 

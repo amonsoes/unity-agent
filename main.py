@@ -1,14 +1,16 @@
-import gym
 import numpy as np
 import argparse
 import os
+import mlagents
 
-from ppo import Agent
+from ppo import agent
 from utils import plot_learning_curve
-
-from gym_unity.envs import UnityToGymWrapper
+from mlagents_envs.environment import UnityEnvironment as UE
 
 def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes):
+    
+    # action space for crawler - real valued vector with 20 parameters 
+    # observation space - real valued vetor with 172 parameters
     
     if os.path.isdir('tmp')==False:
         os.mkdir('tmp')
@@ -17,12 +19,12 @@ def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lambda, poli
         os.mkdir('tmp/ppo')
     if os.path.isdir('plots')==False:
         os.mkdir('plots')
-        
-    env = gym.make(env)
-    env.score_history = []
-    figure_file = 'plots/cartpole.png'
     
-    agent = Agent(n_actions=env.action_space.n,
+    UE(file_name=env, seed=1, side_channels=[])
+    env.score_history = []
+    figure_file = 'plots/agent_vals.png'
+    
+    agent = agent.Agent(n_actions=env.action_space.n,
                 batch_size=batch_size,
                 alpha=alpha,
                 beta=beta,
