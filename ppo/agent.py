@@ -5,6 +5,7 @@ from .network import ActorNetwork, CriticNetwork
 
 
 class PPOMemory:
+    
     def __init__(self, batch_size):
         self.states = []
         self.probs = []
@@ -46,14 +47,17 @@ class PPOMemory:
         self.rewards = []
         self.dones = []
         self.vals = []
+        
+        
 class Agent:
+    
     def __init__(self, n_actions, input_dims, gamma, alpha, beta, gae_lambda,
                  policy_clip, batch_size, n_epochs):
         self.gamma = gamma
         self.policy_clip = policy_clip
         self.n_epochs = n_epochs
         self.gae_lambda = gae_lambda
-        self.actor = ActorNetwork(2, input_dims, alpha) # 2= mu, sigma for Normal
+        self.actor = ActorNetwork(n_actions, input_dims, alpha)
         self.critic = CriticNetwork(input_dims, beta)
         self.memory = PPOMemory(batch_size)
         
@@ -78,14 +82,11 @@ class Agent:
         state = T.tensor([observation], dtype=T.float).to(self.actor.device)
 
         dist = self.actor(state)
+        action_vec = dist.sample()
         value = self.critic(state)
-        action = dist.sample()
+        log_probs = dist.log_prob(action_vec)
 
-        probs = T.squeeze(dist.log_prob(action)).item()
-        action = T.squeeze(action).item()
-        value = T.squeeze(value).item()
-
-        return action, probs, value
+        return action_vec, log_probs, value
 
     def learn(self):
         for _ in range(self.n_epochs):
