@@ -82,11 +82,11 @@ class Agent:
         state = T.tensor([observation], dtype=T.float).to(self.actor.device)
 
         dist = self.actor(state)
-        value_vec = self.critic(state)
         action_vec = dist.sample()
+        value = self.critic(state)
         log_probs = dist.log_prob(action_vec)
 
-        return action_vec, log_probs, value_vec
+        return action_vec, log_probs, value
 
     def learn(self):
         for _ in range(self.n_epochs):
