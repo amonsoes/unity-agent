@@ -3,7 +3,7 @@ import argparse
 import os
 import mlagents
 
-from ppo import agent
+from ppo import agent as a
 from utils import plot_learning_curve
 from mlagents_envs.environment import UnityEnvironment as UE
 
@@ -20,11 +20,11 @@ def main(env, N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lambda, poli
     if os.path.isdir('plots')==False:
         os.mkdir('plots')
     
-    UE(file_name=env, seed=1, side_channels=[])
+    env = UE(file_name=env, seed=1, side_channels=[])
     env.score_history = []
     figure_file = 'plots/agent_vals.png'
     
-    agent = agent.Agent(n_actions=env.action_space.n,
+    agent = a.Agent(n_actions=env.action_space.n,
                 batch_size=batch_size,
                 alpha=alpha,
                 beta=beta,

@@ -81,13 +81,10 @@ class Agent:
     def choose_action(self, observation):
         state = T.tensor([observation], dtype=T.float).to(self.actor.device)
 
-        dists = self.actor(state)
+        dist = self.actor(state)
         value_vec = self.critic(state)
-        action_vec = T.FloatTensor([dist.sample() for dist in dists])
-        log_probs = [dist.log_prob(action_vec[e]) for e, dist in enumerate(dists)]
-
-        #probs = T.squeeze(dist.log_prob(action)).item()
-        #action = T.squeeze(action).item()
+        action_vec = dist.sample()
+        log_probs = dist.log_prob(action_vec)
 
         return action_vec, log_probs, value_vec
 
