@@ -138,6 +138,12 @@ env = UE(file_name='crawler_linux\Crawler', seed=1, side_channels=[])
 env.reset()
 ```
 
+Get observations and actions:
+
+```
+behavior_spec = env.behavior_specs['CrawlerDynamic?team=0']
+```
+
 Troubleshooting:
 
 For OsX/Linux: If your script exits with an error message, that some permissions ar not set:

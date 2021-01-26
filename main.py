@@ -21,17 +21,20 @@ def main(environment, N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lamb
         os.mkdir('plots')
     
     env = UE(file_name=environment, seed=1, side_channels=[])
+    env.reset()
     print('env loaded')
-    behavior_names = env.behavior_specs.keys()
+    behavior_spec = env.behavior_specs['CrawlerDynamic?team=0']
+    num_actions = behavior_spec[1][0]
+    observ_dim = sum([i[0] for i in behavior_spec[0]])
     env.score_history = []
     figure_file = 'plots/agent_vals.png'
     
-    agent = a.Agent(n_actions=env.action_space.n,
+    agent = a.Agent(n_actions=num_actions,
                 batch_size=batch_size,
                 alpha=alpha,
                 beta=beta,
                 n_epochs=n_epochs,
-                input_dims=env.observation_space.shape,
+                input_dims=observ_dim,
                 gae_lambda=gae_lambda,
                 policy_clip=policy_clip)
     
