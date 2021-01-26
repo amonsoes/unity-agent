@@ -65,8 +65,13 @@ python3 main.py
   - batch_size=64
   - N: the number of steps before we perform an update(2048)
   - n_epochs: the number of epochs (10)
-  - gae_lambda: the lambda parameter
+  - gae_lambda: lambda parameter,which is the smoothing factor used in the GAE algorithm
 
+##### Generalized Advantage Estimation(GAE)
+-A way to calculate returns which reduces variance
+-The smoothing is governed by lambda between 0 and 1
+-lambda=1 gives highes accuracy, lower smoothes
+-The PPO paper suggests lambda=0.95
 ##### parameter value im main.py benutzt
 
   (self, n_actions, input_dims, gamma=0.99, alpha=0.0003, gae_lambda=0.95, policy_clip=0.2, batch_size=64, n_epochs=10)
