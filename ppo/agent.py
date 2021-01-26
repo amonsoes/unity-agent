@@ -90,11 +90,11 @@ class Agent:
 
     def learn(self):
         for _ in range(self.n_epochs):
-            state_arr, action_arr, old_prob_arr, vals_arr, \
+            state_arr, action_arr, old_prob_arr, values, \
             reward_arr, dones_arr, batches = \
                 self.memory.generate_batches()
 
-            values = vals_arr
+            
             advantage = np.zeros(len(reward_arr), dtype=np.float32)
 
             for t in range(len(reward_arr) - 1):

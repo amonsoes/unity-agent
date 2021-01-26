@@ -138,7 +138,15 @@ env = UE(file_name='crawler_linux\Crawler', seed=1, side_channels=[])
 env.reset()
 ```
 
+Troubleshooting:
 
+For OsX/Linux: If your script exits with an error message, that some permissions ar not set:
+
+```
+chmod -R 755 /abs/path/to/UnityEnvironment
+```
+
+where abs path to should be replaced with a path to your executable
 
 ### Resources
 

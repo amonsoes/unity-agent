@@ -7,7 +7,7 @@ from ppo import agent as a
 from utils import plot_learning_curve
 from mlagents_envs.environment import UnityEnvironment as UE
 
-def main(N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes):
+def main(environment, N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes):
     
     # action space for crawler - real valued vector with 20 parameters 
     # observation space - real valued vetor with 172 parameters
@@ -20,7 +20,9 @@ def main(N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_cl
     if os.path.isdir('plots')==False:
         os.mkdir('plots')
     
-    env = UE(file_name='crawler_mac.app', seed=1, side_channels=[])
+    env = UE(file_name=environment, seed=1, side_channels=[])
+    print('env loaded')
+    behavior_names = env.behavior_specs.keys()
     env.score_history = []
     figure_file = 'plots/agent_vals.png'
     
