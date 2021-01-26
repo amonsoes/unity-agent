@@ -7,7 +7,7 @@ from ppo import agent as a
 from utils import plot_learning_curve
 from mlagents_envs.environment import UnityEnvironment as UE
 
-def main(environment, N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes):
+def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes):
     
     # action space for crawler - real valued vector with 20 parameters 
     # observation space - real valued vetor with 172 parameters
@@ -30,6 +30,7 @@ def main(environment, N, batch_size, n_epochs, alpha, beta, n_episodes, gae_lamb
     figure_file = 'plots/agent_vals.png'
     
     agent = a.Agent(n_actions=num_actions,
+                gamma=gamma,
                 batch_size=batch_size,
                 alpha=alpha,
                 beta=beta,
@@ -93,6 +94,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('env', type=str)
     parser.add_argument('--batch_size', default=5, type=int)
+    parser.add_argument('--gamma', default=0.99, type=float)
     parser.add_argument('--N', default=5, type=int)
     parser.add_argument('--n_epochs', default=4, type=int)
     parser.add_argument('--n_episodes', default=300,  type=int)
@@ -106,6 +108,7 @@ if __name__ == '__main__':
     main(args.env,
          args.N,
          args.batch_size,
+         args.gamma,
          args.n_epochs,
          args.alpha,
          args.beta,
