@@ -58,8 +58,7 @@ def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, g
     return dev_evaluation
 
 def episode(env, agent, N):
-    env.reset()
-    observation = None
+    observation = env.reset()
     done = False
     score = 0
     while not done:
@@ -97,7 +96,7 @@ if __name__ == '__main__':
     parser.add_argument('env', type=str)
     parser.add_argument('--batch_size', default=5, type=int)
     parser.add_argument('--gamma', default=0.99, type=float)
-    parser.add_argument('--N', default=5, type=int)
+    parser.add_argument('--N', default=20, type=int)
     parser.add_argument('--n_epochs', default=4, type=int)
     parser.add_argument('--n_episodes', default=300,  type=int)
     parser.add_argument('--alpha', default=0.0, type=float)

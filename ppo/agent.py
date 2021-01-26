@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.core.fromnumeric import size
 import torch as T
 
 from .network import ActorNetwork, CriticNetwork
@@ -82,11 +83,11 @@ class Agent:
         state = T.tensor([observation], dtype=T.float).to(self.actor.device)
 
         dist = self.actor(state)
-        action_vec = dist.sample()
-        value = self.critic(state)
-        log_probs = dist.log_prob(action_vec)
+        action_vec = dist.sample().squeeze()
+        value = self.critic(state).squeeze()
+        log_probs = dist.log_prob(action_vec).squeeze()
 
-        return action_vec, log_probs, value
+        return [i.item() for i in action_vec], [i.item() for i in log_probs], [value.item()]
 
     def learn(self):
         for _ in range(self.n_epochs):
