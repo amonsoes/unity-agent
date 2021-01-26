@@ -134,19 +134,22 @@ Imports:
 ```
 import mlagents
 from mlagents_envs.environment import UnityEnvironment as UE
+from gym_unity.envs import UnityToGymWrapper
 ```
 
 Start Enviornment as follows:
 
 ```
 env = UE(file_name='crawler_linux\Crawler', seed=1, side_channels=[])
+env = UnityToGymWrapper(env)
 env.reset()
 ```
 
 Get observations and actions:
 
 ```
-behavior_spec = env.behavior_specs['CrawlerDynamic?team=0']
+num_actions = env.action_size
+observ_dim = env.observation_space.shape[0]
 ```
 
 Troubleshooting:

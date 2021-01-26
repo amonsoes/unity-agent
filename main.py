@@ -6,6 +6,7 @@ import mlagents
 from ppo import agent as a
 from utils import plot_learning_curve
 from mlagents_envs.environment import UnityEnvironment as UE
+from gym_unity.envs import UnityToGymWrapper
 
 def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes):
     
@@ -21,11 +22,11 @@ def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, g
         os.mkdir('plots')
     
     env = UE(file_name=environment, seed=1, side_channels=[])
+    env = UnityToGymWrapper(env)
     env.reset()
     print('env loaded')
-    behavior_spec = env.behavior_specs['CrawlerDynamic?team=0']
-    num_actions = behavior_spec[1][0]
-    observ_dim = sum([i[0] for i in behavior_spec[0]])
+    num_actions = env.action_size
+    observ_dim = env.observation_space.shape[0]
     env.score_history = []
     figure_file = 'plots/agent_vals.png'
     
@@ -39,7 +40,7 @@ def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, g
                 gae_lambda=gae_lambda,
                 policy_clip=policy_clip)
     
-    best_score = env.reward_range[0]
+    best_score = 0
     learn_iters, avg_score, n_steps = 0, 0, 0
     
     for i in range(n_episodes):
@@ -57,7 +58,8 @@ def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, g
     return dev_evaluation
 
 def episode(env, agent, N):
-    observation = env.reset()
+    env.reset()
+    observation = None
     done = False
     score = 0
     while not done:
