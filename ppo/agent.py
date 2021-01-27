@@ -1,5 +1,4 @@
 import numpy as np
-from numpy.core.fromnumeric import size
 import torch as T
 
 from .network import ActorNetwork, CriticNetwork
@@ -122,9 +121,10 @@ class Agent:
                 new_probs = dist.log_prob(actions)
                 prob_ratio = new_probs.exp() / old_probs.exp()
                 # prob_ratio = (new_probs - old_probs).exp()
-                weighted_probs = advantage[batch] * prob_ratio
+                transp_advantage_batch = T.transpose(advantage[batch].unsqueeze(0),0,1)
+                weighted_probs = transp_advantage_batch * prob_ratio
                 weighted_clipped_probs = T.clamp(prob_ratio, 1 - self.policy_clip,
-                                                 1 + self.policy_clip) * advantage[batch]
+                                                 1 + self.policy_clip) * transp_advantage_batch
                 actor_loss = -T.min(weighted_probs, weighted_clipped_probs).mean()
 
                 returns = advantage[batch] + values[batch]

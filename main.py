@@ -1,7 +1,6 @@
 import numpy as np
 import argparse
 import os
-import mlagents
 
 from ppo import agent as a
 from utils import plot_learning_curve
