@@ -40,7 +40,7 @@ def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, g
                 policy_clip=policy_clip)
     
     best_score = 0
-    learn_iters, avg_score, n_steps = 0, 0, 0
+    avg_score= 0, 0, 0
     
     for i in range(n_episodes):
         score, avg_score = episode(env, agent, N)
@@ -48,7 +48,7 @@ def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, g
             best_score = avg_score
             agent.save_models()
         print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score,
-                'time_steps', n_steps, 'learning_steps', learn_iters)
+                'time_steps', agent.n_steps, 'learning_steps', agent.learn_iters)
     
     x = [i+1 for i in range(len(env.score_history))]
     
@@ -57,6 +57,7 @@ def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, g
     return dev_evaluation
 
 def episode(env, agent, N):
+    agent.learn_iters, agent.n_steps = 0, 0
     observation = env.reset()
     done = False
     score = 0
@@ -93,11 +94,11 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
     parser.add_argument('env', type=str)
-    parser.add_argument('--batch_size', default=5, type=int)
+    parser.add_argument('--batch_size', default=3, type=int)
     parser.add_argument('--gamma', default=0.99, type=float)
-    parser.add_argument('--N', default=20, type=int)
+    parser.add_argument('--N', default=3, type=int)
     parser.add_argument('--n_epochs', default=4, type=int)
-    parser.add_argument('--n_episodes', default=300,  type=int)
+    parser.add_argument('--n_episodes', default=2000,  type=int)
     parser.add_argument('--alpha', default=0.0, type=float)
     parser.add_argument('--beta', default=0.0, type=float)
     parser.add_argument('--policy_clip', default=0.2, type=float)
