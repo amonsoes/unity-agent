@@ -10,10 +10,13 @@ class ActorNetwork(nn.Module):
     def __init__(self, n_outs, input_dims, alpha, fc1_dims=256, fc2_dims=256, chkpt_dir='tmp/ppo'):
         super(ActorNetwork, self).__init__()
         self.checkpoint_file = os.path.join(chkpt_dir, 'actor_torch_ppo')
-        self.relu = nn.ReLU()
+        self.seq = nn.Sequential(
+            nn.Linear(input_dims, fc1_dims),
+            nn.ReLU(),
+            nn.Linear(fc1_dims, fc2_dims),
+            nn.ReLU(),
+        )
         self.softplus = nn.Softplus()
-        self.fc1 = nn.Linear(input_dims, fc2_dims)
-        self.fc2 = nn.Linear(fc1_dims, fc2_dims)
         self.mu_out = nn.Linear(fc2_dims, n_outs)
         self.sigma_out = nn.Linear(fc2_dims, n_outs)
         # n_outs for crawler should be a 20x2 real valued matrix containing logits => (mu, sigma) for every agent param
@@ -22,8 +25,7 @@ class ActorNetwork(nn.Module):
         self.to(self.device)
 
     def forward(self, state):
-        state = self.fc1(state)
-        state = self.relu(self.fc2(state))
+        state = self.seq(state)
         
         mu_vec = self.mu_out(state)
         sigma_vec = self.softplus(self.sigma_out(state))
