@@ -87,7 +87,7 @@ https://stable-baselines.readthedocs.io/en/master/guide/install.html
 after that:
 
 ```
-python3 baseline.py --num_episodes
+python3 baseline.py path/to/exec --num_episodes 
 ```
 
 ### Hyperparameter Optimization

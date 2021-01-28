@@ -11,10 +11,11 @@ from mlagents_envs.environment import UnityEnvironment as UE
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
+    parser.add_argument('-executable', type=str, help='path to exec')
     parser.add_argument('--num_episodes', type=int, default=10000, help='set number of training episodes')
     args = parser.parse_args()
     
-    env_name = "./crawler_mac.app"
+    env_name = args.executable
     env = UE(file_name=env_name, seed=1, side_channels=[])
     env = UnityToGymWrapper(env)
 
