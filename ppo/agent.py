@@ -94,7 +94,6 @@ class Agent:
             reward_arr, dones_arr, batches = \
                 self.memory.generate_batches()
 
-            
             advantage = np.zeros(len(reward_arr), dtype=np.float32)
 
             for t in range(len(reward_arr) - 1):
@@ -131,7 +130,7 @@ class Agent:
                 critic_loss = (returns - critic_value) ** 2
                 critic_loss = critic_loss.mean()
                 # entropy bonus improves exploration
-                total_loss = actor_loss + 0.5 * critic_loss-0.001*entropy
+                total_loss = actor_loss + 0.5 * critic_loss#-0.001*entropy
                 self.actor.optimizer.zero_grad()
                 self.critic.optimizer.zero_grad()
                 total_loss.backward()

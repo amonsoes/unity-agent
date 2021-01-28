@@ -3,7 +3,7 @@ import torch as T
 import torch.optim as optim
 
 from torch import nn
-from torch.distributions import Categorical, Normal
+from torch.distributions import Normal
 
 
 class ActorNetwork(nn.Module):
@@ -19,7 +19,6 @@ class ActorNetwork(nn.Module):
         self.softplus = nn.Softplus()
         self.mu_out = nn.Linear(fc2_dims, n_outs)
         self.sigma_out = nn.Linear(fc2_dims, n_outs)
-        # n_outs for crawler should be a 20x2 real valued matrix containing logits => (mu, sigma) for every agent param
         self.optimizer = optim.Adam(self.parameters(), lr=alpha) if alpha != 0.0 else optim.Adam(self.parameters())
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
         self.to(self.device)

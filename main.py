@@ -40,7 +40,7 @@ def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, g
                 policy_clip=policy_clip)
     
     best_score = 0
-    avg_score= 0, 0, 0
+    avg_score = 0
     
     for i in range(n_episodes):
         score, avg_score = episode(env, agent, N)
@@ -97,8 +97,8 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', default=3, type=int)
     parser.add_argument('--gamma', default=0.99, type=float)
     parser.add_argument('--N', default=3, type=int)
-    parser.add_argument('--n_epochs', default=4, type=int)
-    parser.add_argument('--n_episodes', default=2000,  type=int)
+    parser.add_argument('--n_epochs', default=20, type=int)
+    parser.add_argument('--n_episodes', default=10000,  type=int)
     parser.add_argument('--alpha', default=0.0, type=float)
     parser.add_argument('--beta', default=0.0, type=float)
     parser.add_argument('--policy_clip', default=0.2, type=float)

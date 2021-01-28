@@ -77,6 +77,11 @@ python3 main.py
   (self, n_actions, input_dims, gamma=0.99, alpha=0.0003, gae_lambda=0.95, policy_clip=0.2, batch_size=64, n_epochs=10)
   this parameters com from the values for continuous enviroments)
 
+### Baseline Run
+
+```
+python3 baseline.py --num_episodes
+```
 
 ### Hyperparameter Optimization
 
