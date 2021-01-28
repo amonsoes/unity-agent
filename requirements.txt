@@ -1,5 +1,7 @@
 gym==0.17.3
 gym-unity==0.22.0
+mlagents==0.23.0
 matplotlib==3.3.2
 torch==1.7.0
 torchvision==0.8.1
+stable_baselines3
