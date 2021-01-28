@@ -4,14 +4,13 @@ import argparse
 
 from stable_baselines3 import PPO
 
-
 from gym_unity.envs import UnityToGymWrapper
 from mlagents_envs.environment import UnityEnvironment as UE
 
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('-executable', type=str, help='path to exec')
+    parser.add_argument('executable', type=str, help='path to exec')
     parser.add_argument('--num_episodes', type=int, default=10000, help='set number of training episodes')
     args = parser.parse_args()
     
@@ -29,10 +28,14 @@ if __name__ == "__main__":
     
     obs = env.reset
     for i in range(args.num_episodes):
-        action, _states = model.predict(obs, deterministic=True)
-        obs, reward, done, info = env.step(action)
-        env.render()
-        if done:
-            obs = env.reset()
-
+        print(f'\nEPISODE:{i}\n')
+        obs = env.reset()
+        total, step, done = 0, 0, False
+        while not done:
+            action, _states = model.predict(obs, deterministic=True)
+            obs, reward, done, info = env.step(action)
+            env.render()
+            total += reward
+            step += i
+        print(f'Reward: {total}, steps: {step}')
     env.close()
