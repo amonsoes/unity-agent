@@ -79,6 +79,13 @@ python3 main.py
 
 ### Baseline Run
 
+to run the baseline you'll need the stable.baselines package. This has a few prerequisites.
+Follow these instructions:
+
+https://stable-baselines.readthedocs.io/en/master/guide/install.html
+
+after that:
+
 ```
 python3 baseline.py --num_episodes
 ```
