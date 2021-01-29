@@ -98,7 +98,7 @@ if __name__ == '__main__':
     parser.add_argument('--gamma', default=0.99, type=float)
     parser.add_argument('--N', default=3, type=int)
     parser.add_argument('--n_epochs', default=20, type=int)
-    parser.add_argument('--n_episodes', default=10000,  type=int)
+    parser.add_argument('--n_episodes', default=20000,  type=int)
     parser.add_argument('--alpha', default=0.0, type=float)
     parser.add_argument('--beta', default=0.0, type=float)
     parser.add_argument('--policy_clip', default=0.2, type=float)

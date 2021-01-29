@@ -16,7 +16,8 @@ class ActorNetwork(nn.Module):
             nn.Linear(fc1_dims, fc2_dims),
             nn.ReLU(),
         )
-        self.softplus = nn.Softplus()
+        self.softmax = nn.Softmax()
+        self.tanh = nn.Tanh()
         self.mu_out = nn.Linear(fc2_dims, n_outs)
         self.sigma_out = nn.Linear(fc2_dims, n_outs)
         self.optimizer = optim.Adam(self.parameters(), lr=alpha) if alpha != 0.0 else optim.Adam(self.parameters())
@@ -26,8 +27,8 @@ class ActorNetwork(nn.Module):
     def forward(self, state):
         state = self.seq(state)
         
-        mu_vec = self.mu_out(state)
-        sigma_vec = self.softplus(self.sigma_out(state))
+        mu_vec = self.tanh(self.mu_out(state))
+        sigma_vec = self.softmax(self.sigma_out(state))
         
         dist = Normal(mu_vec, sigma_vec)
         # sigma can't be a negative value

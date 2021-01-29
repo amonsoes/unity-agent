@@ -130,7 +130,7 @@ class Agent:
                 critic_loss = (returns - critic_value) ** 2
                 critic_loss = critic_loss.mean()
                 # entropy bonus improves exploration
-                total_loss = actor_loss + 0.5 * critic_loss#-0.001*entropy
+                total_loss = actor_loss + 0.5 * critic_loss-0.001*entropy
                 self.actor.optimizer.zero_grad()
                 self.critic.optimizer.zero_grad()
                 total_loss.backward()
