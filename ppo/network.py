@@ -7,7 +7,7 @@ from torch.distributions import Normal
 
 
 class ActorNetwork(nn.Module):
-    def __init__(self, n_outs, input_dims, alpha, fc1_dims=256, fc2_dims=256, chkpt_dir='tmp/ppo'):
+    def __init__(self, n_outs, input_dims, alpha, fc1_dims=1024, fc2_dims=1024, chkpt_dir='tmp/ppo'):
         super(ActorNetwork, self).__init__()
         self.checkpoint_file = os.path.join(chkpt_dir, 'actor_torch_ppo')
         self.seq = nn.Sequential(
@@ -28,7 +28,7 @@ class ActorNetwork(nn.Module):
         state = self.seq(state)
         
         mu_vec = self.tanh(self.mu_out(state))
-        sigma_vec = self.softmax(self.sigma_out(state))
+        sigma_vec = T.clamp(self.sigma_out(state), max=1.0, min=0.0)
         
         dist = Normal(mu_vec, sigma_vec)
         # sigma can't be a negative value
@@ -43,10 +43,10 @@ class ActorNetwork(nn.Module):
 
 
 class CriticNetwork(nn.Module):
-    def __init__(self, input_dims, beta, fc1_dims=256, fc2_dims=256,
+    def __init__(self, input_dims, beta, fc1_dims=1024, fc2_dims=1024,
                  chkpt_dir='tmp/ppo'):
         super(CriticNetwork, self).__init__()
-
+        self.tanh = nn.Tanh()
         self.checkpoint_file = os.path.join(chkpt_dir, 'critic_torch_ppo')
         self.critic = nn.Sequential(
             nn.Linear(input_dims, fc1_dims),
@@ -61,7 +61,7 @@ class CriticNetwork(nn.Module):
         self.to(self.device)
 
     def forward(self, state):
-        value = self.critic(state)
+        value = self.tanh(self.critic(state))
         return value
 
     def save_checkpoint(self):

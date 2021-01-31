@@ -7,7 +7,7 @@ from utils import plot_learning_curve
 from mlagents_envs.environment import UnityEnvironment as UE
 from gym_unity.envs import UnityToGymWrapper
 
-def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes):
+def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes, random_eps):
     
     # action space for crawler - real valued vector with 20 parameters 
     # observation space - real valued vetor with 172 parameters
@@ -43,12 +43,16 @@ def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, g
     avg_score = 0
     
     for i in range(n_episodes):
-        score, avg_score = episode(env, agent, N)
-        if avg_score > best_score:
-            best_score = avg_score
-            agent.save_models()
-        print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score,
-                'time_steps', agent.n_steps, 'learning_steps', agent.learn_iters)
+        if random_eps:
+            score = random_episode(env)
+            print(f'for {i}, score:{score}')
+        else:
+            score, avg_score = episode(env, agent, N)
+            if avg_score > best_score:
+                best_score = avg_score
+                agent.save_models()
+            print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score,
+                    'time_steps', agent.n_steps, 'learning_steps', agent.learn_iters)
     
     x = [i+1 for i in range(len(env.score_history))]
     
@@ -63,7 +67,7 @@ def episode(env, agent, N):
     score = 0
     while not done:
         action, prob, val = agent.choose_action(observation)
-        observation_, reward, done, _ = env.step(action)
+        observation_, reward, done, info = env.step(action)
         agent.n_steps += 1
         score += reward
         agent.remember(observation, action, prob, val, reward, done)
@@ -74,6 +78,17 @@ def episode(env, agent, N):
     env.score_history.append(score)
     avg_score = np.mean(env.score_history[-100:])
     return score, avg_score
+
+def random_episode(env):
+    done = False
+    total = 0
+    observation = env.reset()
+    while not done:
+        action = np.random.randn(20) 
+        action = np.clip(action, -1, 1)                  
+        observation, reward, done, info = env.step(action)                                      
+        total += reward        
+    return total                               
 
 def dev_evaluate(env, agent, N, dev_episodes):
     scores = []
@@ -104,6 +119,7 @@ if __name__ == '__main__':
     parser.add_argument('--policy_clip', default=0.2, type=float)
     parser.add_argument('--gae_lambda', default=0.95, type=float)
     parser.add_argument('--dev_episodes', default=50, type=int)
+    parser.add_argument('--random', type=lambda x: x=='True', default=False)
     args = parser.parse_args()
     
     main(args.env,
@@ -116,4 +132,5 @@ if __name__ == '__main__':
          args.n_episodes,
          args.gae_lambda,
          args.policy_clip,
-         args.dev_episodes)
+         args.dev_episodes,
+         args.random)

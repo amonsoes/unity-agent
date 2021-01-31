@@ -51,8 +51,7 @@ class PPOMemory:
         
 class Agent:
     
-    def __init__(self, n_actions, input_dims, gamma, alpha, beta, gae_lambda,
-                 policy_clip, batch_size, n_epochs):
+    def __init__(self, n_actions, input_dims, gamma, alpha, beta, gae_lambda, policy_clip, batch_size, n_epochs):
         self.gamma = gamma
         self.policy_clip = policy_clip
         self.n_epochs = n_epochs
@@ -90,9 +89,7 @@ class Agent:
 
     def learn(self):
         for _ in range(self.n_epochs):
-            state_arr, action_arr, old_prob_arr, values, \
-            reward_arr, dones_arr, batches = \
-                self.memory.generate_batches()
+            state_arr, action_arr, old_prob_arr, values, reward_arr, dones_arr, batches = self.memory.generate_batches()
 
             advantage = np.zeros(len(reward_arr), dtype=np.float32)
 
@@ -100,8 +97,7 @@ class Agent:
                 discount = 1
                 a_t = 0
                 for k in range(t, len(reward_arr) - 1):
-                    a_t += discount * (reward_arr[k] + self.gamma * values[k + 1] * \
-                                       (1 - int(dones_arr[k])) - values[k])
+                    a_t += discount * (reward_arr[k] + self.gamma * values[k + 1] * (1 - int(dones_arr[k])) - values[k])
                     discount *= self.gamma * self.gae_lambda
                 advantage[t] = a_t
             advantage = T.tensor(advantage).to(self.actor.device)
@@ -119,11 +115,9 @@ class Agent:
                 entropy = dist.entropy().mean()
                 new_probs = dist.log_prob(actions)
                 prob_ratio = new_probs.exp() / old_probs.exp()
-                # prob_ratio = (new_probs - old_probs).exp()
                 transp_advantage_batch = T.transpose(advantage[batch].unsqueeze(0),0,1)
                 weighted_probs = transp_advantage_batch * prob_ratio
-                weighted_clipped_probs = T.clamp(prob_ratio, 1 - self.policy_clip,
-                                                 1 + self.policy_clip) * transp_advantage_batch
+                weighted_clipped_probs = T.clamp(prob_ratio, 1 - self.policy_clip, 1 + self.policy_clip) * transp_advantage_batch
                 actor_loss = -T.min(weighted_probs, weighted_clipped_probs).mean()
 
                 returns = advantage[batch] + values[batch]
