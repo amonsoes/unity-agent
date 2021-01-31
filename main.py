@@ -67,7 +67,7 @@ def episode(env, agent, N):
     score = 0
     while not done:
         action, prob, val = agent.choose_action(observation)
-        observation_, reward, done, info = env.step(action)
+        observation_, reward, done, _ = env.step(action)
         agent.n_steps += 1
         score += reward
         agent.remember(observation, action, prob, val, reward, done)
@@ -82,11 +82,11 @@ def episode(env, agent, N):
 def random_episode(env):
     done = False
     total = 0
-    observation = env.reset()
+    _ = env.reset()
     while not done:
         action = np.random.randn(20) 
         action = np.clip(action, -1, 1)                  
-        observation, reward, done, info = env.step(action)                                      
+        _, reward, done, _ = env.step(action)                                      
         total += reward        
     return total                               
 

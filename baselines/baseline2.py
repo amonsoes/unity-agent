@@ -1,3 +1,5 @@
+import argparse
+
 from mlagents_envs.environment import UnityEnvironment
 from gym_unity.envs import UnityToGymWrapper
 from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv
@@ -30,14 +32,20 @@ def make_unity_env(env_directory, num_env, visual, start_index=0):
         rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
         return DummyVecEnv([make_env(rank, use_visual=False)])
 
-def main():
-    env = make_unity_env('./executables/CrawlerBuild.app', 1, True)
+def main(environment, nr_episodes):
+    env = make_unity_env(environment, 1, True)
     ppo2.learn(
         network="mlp",
         env=env,
-        total_timesteps=100000,
+        total_timesteps=nr_episodes,
         lr=1e-3,
     )
 
 if __name__ == '__main__':
-    main()
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('executable', type=str, help='path to exec')
+    parser.add_argument('--num_episodes', type=int, default=10000, help='set number of training episodes')
+    args = parser.parse_args()
+    
+    main(args.executable, args.num_episodes)

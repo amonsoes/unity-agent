@@ -4,10 +4,74 @@
 
 see requirements.txt
 
+```
+pip3 install -r requirements.txt
+```
+
+### Main Program
+
+```
+python3 main.py executable
+```
+
+##### optional args:
+
+the following arguments have default values, however you can experiment by setting them in the CLI
+
+- batch_size - batch size for the agent update
+- gamma - discout factor for episodes
+- N - agent update interval
+- n_epochs - number of times the agent updates on memory
+- n_episodes - nr of episodes the agents trains
+- alpha - learning rate of the actor
+- beta - learning rate of the critic
+- policy_clip - clip treshold of weight updates
+- gae_lambda - discount factor of advantage estimation
+- dev_episodes - development mean
+- random - True if agent should be random insteaf of PPO, default is False
+
 ### Agents
 
-- asyncronous A2C algorithm with temporal difference advantage.
 - PPO Agent
+- asyncronous A2C algorithm with temporal difference advantage.
+
+### PPO Implementation Notes:
+
+##### Usage
+
+```
+python3 main.py executable
+```
+- Memory Indices[0,1,...,19]
+- Batches start at multiples of batch_size[0,5,10,15]
+- shuffle memories then take batch size chunks for a mini batch of stochastic gradient ascent
+- Two distinct networks instead of shared inputs
+- Memory is fixed to length T(20)steps
+- Track state, actions, reward, dones, values, log probs
+- the values of those states according to critic network and the log of the probability selecting those actions
+- shuffle memories and sample batches(5)
+- perform 4 epochs of updates on each batch
+
+##### Hyperparameters
+
+Memory length T(should be much less than the length of episode), batch size, number of epochs, learning rate
+
+- gamma: discount factor in the calculation of our advantages(typically use 0.99)
+- alpha: learning rate (0.0003) for actor
+- beta: learning rate for critic
+- policy_clip: 0.1/0.2
+- batch_size=64
+- N: the number of steps before we perform an update(2048)
+- n_epochs: the number of epochs (10)
+- gae_lambda: lambda parameter,which is the smoothing factor used in the GAE algorithm
+
+##### Generalized Advantage Estimation(GAE)
+
+-A way to calculate returns which reduces variance
+-The smoothing is governed by lambda between 0 and 1
+-lambda=1 gives highes accuracy, lower smoothes
+-The PPO paper suggests lambda=0.95
+
 
 ### A2C Implementation Notes
 
@@ -26,60 +90,9 @@ python3 main.py --env CartPole-v1 --gamma 0.99 --nr_outputs 2 --alpha 0.0005 --b
 - training_iter : how many training iters the agent does
 - hidden_dim : hidden size of the networks
 
-##### Peculiarities:
-
-In order for the agent to act in the environment Cartpole, the distribution over the actions is categorical for now.
-Change to Normal for more agnoistc agent.
-
-Best observed Hyperparams are stored in default params. Those need to change as soon as we deploy the algorithm to the
-new env.
-
-
-### PPO Implementation Notes:
-(folowing parameters works well for CartPole enviroment )
-Implementation Notes
-
-##### Usage
-
-```
-python3 main.py
-```
-- Memory Indices[0,1,...,19]
-- Batches start at multiples of batch_size[0,5,10,15]
-- shuffle memories then take batch size chunks for a mini batch of stochastic gradient ascent
-- Two distinct networks instead of shared inputs
-- Memory is fixed to length T(20)steps
-- Track state, actions, reward, dones, values, log probs
- - the values of those states according to critic network and the log of the probability selecting those actions
- - shuffle memories and sample batches(5)
- - perform 4 epochs of updates on each batch
-
-  ##### Hyperparameters
-
-  Memory length T(should be much less than the length of episode), batch size, number of epochs, learning rate
-
-  - gamma: discount factor in the calculation of our advantages(typically use 0.99)
-  - alpha: learning rate (0.0003) for actor
-  - beta: learning rate for critic
-  - policy_clip: 0.1/0.2
-  - batch_size=64
-  - N: the number of steps before we perform an update(2048)
-  - n_epochs: the number of epochs (10)
-  - gae_lambda: lambda parameter,which is the smoothing factor used in the GAE algorithm
-
-##### Generalized Advantage Estimation(GAE)
--A way to calculate returns which reduces variance
--The smoothing is governed by lambda between 0 and 1
--lambda=1 gives highes accuracy, lower smoothes
--The PPO paper suggests lambda=0.95
-##### parameter value im main.py benutzt
-
-  (self, n_actions, input_dims, gamma=0.99, alpha=0.0003, gae_lambda=0.95, policy_clip=0.2, batch_size=64, n_epochs=10)
-  this parameters com from the values for continuous enviroments)
-
 ### Baseline Run
 
-to run the baseline you'll need the stable.baselines package. This has a few prerequisites.
+to run the baseline you'll need the stable_baselines package. This has a few prerequisites.
 Follow these instructions:
 
 https://stable-baselines.readthedocs.io/en/master/guide/install.html
@@ -88,6 +101,17 @@ after that:
 
 ```
 python3 baseline.py path/to/exec --num_episodes 
+```
+
+to run baseline2.py, you'll need the baselines package from OpenAI. This has a few prerequisites.
+Follow these instructions:
+
+https://github.com/openai/baselines
+
+after that:
+
+```
+python3 baselines2.py path/to/exec --num_episodes
 ```
 
 ### Hyperparameter Optimization
@@ -122,7 +146,6 @@ A 3D unity continous environment from Unity ML-Agents.
 
 For every parameter, the actor networks builds a Normal Distribution on
 a mu and sigma, which are the outputs of the actor network in our PPO agent.
-
 
 
 ### Unity Environment
