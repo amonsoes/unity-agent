@@ -42,24 +42,22 @@ the following arguments have default values, however you can experiment by setti
 ```
 python3 main.py executable
 ```
-- Memory Indices[0,1,...,19]
-- Batches start at multiples of batch_size[0,5,10,15]
+
 - shuffle memories then take batch size chunks for a mini batch of stochastic gradient ascent
 - Two distinct networks instead of shared inputs
-- Memory is fixed to length T(20)steps
 - Track state, actions, reward, dones, values, log probs
 - the values of those states according to critic network and the log of the probability selecting those actions
-- shuffle memories and sample batches(5)
-- perform 4 epochs of updates on each batch
+- shuffle memories and sample batches
+- perform n_epochs of updates on each batch
 
 ##### Hyperparameters
 
 Memory length T(should be much less than the length of episode), batch size, number of epochs, learning rate
 
 - gamma: discount factor in the calculation of our advantages(typically use 0.99)
-- alpha: learning rate (0.0003) for actor
+- alpha: learning rate for actor
 - beta: learning rate for critic
-- policy_clip: 0.1/0.2
+- policy_clip: 0.1/0.2, the PPO paper suggests 0.2
 - batch_size=64
 - N: the number of steps before we perform an update(2048)
 - n_epochs: the number of epochs (10)
@@ -67,10 +65,18 @@ Memory length T(should be much less than the length of episode), batch size, num
 
 ##### Generalized Advantage Estimation(GAE)
 
--A way to calculate returns which reduces variance
--The smoothing is governed by lambda between 0 and 1
--lambda=1 gives highes accuracy, lower smoothes
--The PPO paper suggests lambda=0.95
+- A way to calculate returns which reduces variance
+- The smoothing is governed by lambda between 0 and 1
+- lambda=1 gives highes accuracy, lower smoothes
+- The PPO paper suggests lambda=0.95
+
+##### Surrogate Policy Loss
+- PPO loss function is based on the ratio of(new_prob/old_prob)
+- In logarithmic space, (new_log_probs - old_log_probs).exp
+- PPO policy loss is the minimum of two surrogate functions
+- Surrogate1: ratio*advantage
+- Surrogate2: clip(ratio,1-policy.clip,1+policy.clip)*advantage
+
 
 
 ### A2C Implementation Notes
