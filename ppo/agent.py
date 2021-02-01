@@ -60,6 +60,7 @@ class Agent:
         self.critic = CriticNetwork(input_dims, beta)
         self.memory = PPOMemory(batch_size)
         self.entropy_bonus = entropy_bonus
+        self.eps = np.finfo(np.float32).eps.item()
         
         # i put nr_steps, n_learning_iters also to agent, in order to clean main
         self.n_steps = 0
@@ -117,7 +118,7 @@ class Agent:
                 new_probs = dist.log_prob(actions)
                 prob_ratio = new_probs.exp() / old_probs.exp()
                 transp_advantage_batch = T.transpose(advantage[batch].unsqueeze(0),0,1)
-                weighted_probs = transp_advantage_batch * prob_ratio
+                weighted_probs = prob_ratio * transp_advantage_batch
                 weighted_clipped_probs = T.clamp(prob_ratio, 1 - self.policy_clip, 1 + self.policy_clip) * transp_advantage_batch
                 actor_loss = -T.min(weighted_probs, weighted_clipped_probs).mean()
 

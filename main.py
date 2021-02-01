@@ -2,6 +2,7 @@ import numpy as np
 import argparse
 import os
 
+
 from ppo import agent as a
 from utils import plot_learning_curve
 from mlagents_envs.environment import UnityEnvironment as UE
@@ -57,7 +58,7 @@ def main(environment,
     
     for i in range(n_episodes):
         if random_eps:
-            score = random_episode(env)
+            score = random_episode(env, num_actions)
             print(f'for {i}, score:{score}')
         else:
             score, avg_score = episode(env, agent, N)
@@ -74,12 +75,15 @@ def main(environment,
     return dev_evaluation
 
 def episode(env, agent, N):
-    agent.learn_iters, agent.n_steps = 0, 0
+    agent.learn_iters = 0
     observation = env.reset()
     done = False
     score = 0
     while not done:
         action, prob, val = agent.choose_action(observation)
+        print('before_clip :', action)
+        action = np.clip(np.array(action), a_min=-1.0, a_max=1.0)
+        #print(action)
         observation_, reward, done, _ = env.step(action)
         agent.n_steps += 1
         score += reward
@@ -92,15 +96,15 @@ def episode(env, agent, N):
     avg_score = np.mean(env.score_history[-100:])
     return score, avg_score
 
-def random_episode(env):
+def random_episode(env, num_actions):
     done = False
     total = 0
     _ = env.reset()
     while not done:
-        action = np.random.randn(20) 
-        action = np.clip(action, -1, 1)                  
+        action = np.random.randn(num_actions, dtype=np.float32) 
+        action = np.clip(action, -0.99, 0.99)                  
         _, reward, done, _ = env.step(action)                                      
-        total += reward        
+        total += reward
     return total                               
 
 def dev_evaluate(env, agent, N, dev_episodes):
@@ -122,14 +126,14 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
     parser.add_argument('env', type=str)
-    parser.add_argument('--batch_size', default=3, type=int)
+    parser.add_argument('--batch_size', default=15, type=int)
     parser.add_argument('--gamma', default=0.99, type=float)
-    parser.add_argument('--N', default=3, type=int)
-    parser.add_argument('--n_epochs', default=20, type=int)
+    parser.add_argument('--N', default=60, type=int)
+    parser.add_argument('--n_epochs', default=4, type=int)
     parser.add_argument('--n_episodes', default=20000,  type=int)
     parser.add_argument('--alpha', default=0.0, type=float)
     parser.add_argument('--beta', default=0.0, type=float)
-    parser.add_argument('--policy_clip', default=0.2, type=float)
+    parser.add_argument('--policy_clip', default=0.3, type=float)
     parser.add_argument('--gae_lambda', default=0.95, type=float)
     parser.add_argument('--dev_episodes', default=50, type=int)
     parser.add_argument('--random', type=lambda x: x=='True', default=False)

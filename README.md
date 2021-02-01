@@ -164,7 +164,7 @@ pip install mlagents==0.23.0
 For GymWrapper
 
 ```
-pip install gym-unity==0.22.0
+pip install gym-unity==0.23.0
 ```
 
 Imports:
