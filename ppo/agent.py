@@ -51,7 +51,7 @@ class PPOMemory:
         
 class Agent:
     
-    def __init__(self, n_actions, input_dims, gamma, alpha, beta, gae_lambda, policy_clip, batch_size, n_epochs):
+    def __init__(self, n_actions, input_dims, gamma, alpha, beta, gae_lambda, policy_clip, batch_size, n_epochs,entropy_bonus):
         self.gamma = gamma
         self.policy_clip = policy_clip
         self.n_epochs = n_epochs
@@ -59,6 +59,7 @@ class Agent:
         self.actor = ActorNetwork(n_actions, input_dims, alpha)
         self.critic = CriticNetwork(input_dims, beta)
         self.memory = PPOMemory(batch_size)
+        self.entropy_bonus=entropy_bonus
         
         # i put nr_steps, n_learning_iters also to agent, in order to clean main
         self.n_steps = 0
@@ -124,7 +125,11 @@ class Agent:
                 critic_loss = (returns - critic_value) ** 2
                 critic_loss = critic_loss.mean()
                 # entropy bonus improves exploration
-                total_loss = actor_loss + 0.5 * critic_loss-0.001*entropy
+                if entropy_bonus:
+                    entorpy_beta=0.001;
+                else:
+                    entorpy_beta=0;
+                total_loss = actor_loss + 0.5 * critic_loss-entorpy_beta*entropy
                 self.actor.optimizer.zero_grad()
                 self.critic.optimizer.zero_grad()
                 total_loss.backward()
