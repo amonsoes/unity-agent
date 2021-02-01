@@ -7,7 +7,19 @@ from utils import plot_learning_curve
 from mlagents_envs.environment import UnityEnvironment as UE
 from gym_unity.envs import UnityToGymWrapper
 
-def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, gae_lambda, policy_clip, dev_episodes, random_eps,entropy_bonus):
+def main(environment,
+         N, 
+         batch_size, 
+         gamma, 
+         n_epochs, 
+         alpha, 
+         beta, 
+         n_episodes, 
+         gae_lambda, 
+         policy_clip, 
+         dev_episodes, 
+         random_eps, 
+         entropy_bonus):
     
     # action space for crawler - real valued vector with 20 parameters 
     # observation space - real valued vetor with 172 parameters
@@ -37,7 +49,7 @@ def main(environment, N, batch_size, gamma, n_epochs, alpha, beta, n_episodes, g
                 n_epochs=n_epochs,
                 input_dims=observ_dim,
                 gae_lambda=gae_lambda,
-                policy_clip=policy_clip
+                policy_clip=policy_clip,
                 entropy_bonus=entropy_bonus)
     
     best_score = 0
@@ -121,7 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('--gae_lambda', default=0.95, type=float)
     parser.add_argument('--dev_episodes', default=50, type=int)
     parser.add_argument('--random', type=lambda x: x=='True', default=False)
-     parser.add_argument('--entropy_bonus', type=lambda x: x=='True', default=False)
+    parser.add_argument('--entropy_bonus', type=lambda x: x=='True', default=False)
     args = parser.parse_args()
     
     main(args.env,
@@ -135,5 +147,5 @@ if __name__ == '__main__':
          args.gae_lambda,
          args.policy_clip,
          args.dev_episodes,
-         args.random
+         args.random,
          args.entropy_bonus)

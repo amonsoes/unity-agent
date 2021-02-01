@@ -81,11 +81,8 @@ Memory length T(should be much less than the length of episode), batch size, num
 
 ### A2C Implementation Notes
 
-##### Usage:
+This is an a2c with temporal difference advantage for discrete baseline comparison
 
-```
-python3 main.py --env CartPole-v1 --gamma 0.99 --nr_outputs 2 --alpha 0.0005 --beta 0.001 --training_iter 1500 --hidden_dim 64
-```
 ##### Args:
 
 - env : the environment in which the agents learns
