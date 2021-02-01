@@ -77,21 +77,23 @@ def main(environment,
 def episode(env, agent, N):
     agent.learn_iters = 0
     observation = env.reset()
-    done = False
+    done = np.array([False])
     score = 0
     while not done:
         action, prob, val = agent.choose_action(observation)
-        print('before_clip :', action)
         action = np.clip(np.array(action), a_min=-1.0, a_max=1.0)
         #print(action)
-        observation_, reward, done, _ = env.step(action)
+        observation_, reward, done_, _ = env.step(action)
         agent.n_steps += 1
         score += reward
         agent.remember(observation, action, prob, val, reward, done)
         if agent.n_steps % N == 0:
-            agent.learn()
+            _, _, val = agent.choose_action(observation)
+            
+            agent.learn(last_done=done_, last_val=val)
             agent.learn_iters += 1
         observation = observation_
+        done = done_
     env.score_history.append(score)
     avg_score = np.mean(env.score_history[-100:])
     return score, avg_score
@@ -126,13 +128,13 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
     parser.add_argument('env', type=str)
-    parser.add_argument('--batch_size', default=15, type=int)
+    parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--gamma', default=0.99, type=float)
-    parser.add_argument('--N', default=60, type=int)
-    parser.add_argument('--n_epochs', default=4, type=int)
+    parser.add_argument('--N', default=2048, type=int)
+    parser.add_argument('--n_epochs', default=10, type=int)
     parser.add_argument('--n_episodes', default=20000,  type=int)
-    parser.add_argument('--alpha', default=0.0, type=float)
-    parser.add_argument('--beta', default=0.0, type=float)
+    parser.add_argument('--alpha', default=0.0003, type=float)
+    parser.add_argument('--beta', default=0.0003, type=float)
     parser.add_argument('--policy_clip', default=0.3, type=float)
     parser.add_argument('--gae_lambda', default=0.95, type=float)
     parser.add_argument('--dev_episodes', default=50, type=int)

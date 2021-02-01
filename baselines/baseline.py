@@ -26,7 +26,7 @@ if __name__ == "__main__":
     model = PPO('MlpPolicy', env, verbose=1)
     model.learn(total_timesteps=10000)
     
-    obs = env.reset
+    obs = env.reset()
     for i in range(args.num_episodes):
         print(f'\nEPISODE:{i}\n')
         obs = env.reset()

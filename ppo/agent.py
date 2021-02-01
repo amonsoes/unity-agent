@@ -81,15 +81,15 @@ class Agent:
 
     def choose_action(self, observation):
         state = T.tensor([observation], dtype=T.float).to(self.actor.device)
-
-        dist = self.actor(state)
-        action_vec = dist.sample().squeeze()
-        value = self.critic(state).squeeze()
-        log_probs = dist.log_prob(action_vec).squeeze()
+        with T.no_grad():
+            dist = self.actor(state)
+            action_vec = dist.sample().squeeze()
+            value = self.critic(state).squeeze()
+            log_probs = dist.log_prob(action_vec).squeeze()
 
         return [i.item() for i in action_vec], [i.item() for i in log_probs], [value.item()]
 
-    def learn(self):
+    def learn(self, last_done, last_val):
         for _ in range(self.n_epochs):
             state_arr, action_arr, old_prob_arr, values, reward_arr, dones_arr, batches = self.memory.generate_batches()
 
