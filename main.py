@@ -1,7 +1,7 @@
 import numpy as np
 import argparse
 import os
-
+import torch as T
 
 from ppo import agent as a
 from utils import plot_learning_curve
@@ -18,7 +18,8 @@ def main(environment,
          n_episodes, 
          gae_lambda, 
          policy_clip, 
-         dev_episodes, 
+         dev_episodes,
+         ac_dim,
          random_eps, 
          entropy_bonus):
     
@@ -49,6 +50,7 @@ def main(environment,
                 beta=beta,
                 n_epochs=n_epochs,
                 input_dims=observ_dim,
+                ac_dim=ac_dim,
                 gae_lambda=gae_lambda,
                 policy_clip=policy_clip,
                 entropy_bonus=entropy_bonus)
@@ -70,12 +72,11 @@ def main(environment,
     
     x = [i+1 for i in range(len(env.score_history))]
     
-    dev_evaluation = dev_evaluate(env, agent, N, dev_episodes)
+    dev_evaluation = dev_evaluate(env, agent, dev_episodes)
     plot_learning_curve(x, env.score_history, figure_file)
     return dev_evaluation
 
 def episode(env, agent, N):
-    agent.learn_iters = 0
     observation = env.reset()
     done = np.array([False])
     score = 0
@@ -104,16 +105,28 @@ def random_episode(env, num_actions):
     _ = env.reset()
     while not done:
         action = np.random.randn(num_actions, dtype=np.float32) 
-        action = np.clip(action, -0.99, 0.99)                  
+        action = np.clip(action, -1.0, 1.0)                  
         _, reward, done, _ = env.step(action)                                      
         total += reward
-    return total                               
+    return total
 
-def dev_evaluate(env, agent, N, dev_episodes):
+def dev_episode(env, agent):
+    observation = env.reset()
+    total = 0
+    done = False
+    while not done:
+        action = agent.predict(T.tensor(observation))
+        action = np.clip(action.detach().numpy(), -1.0, 1.0)
+        observation, reward, done, _ = env.step(action)
+        total += reward
+    return total   
+
+def dev_evaluate(env, agent, dev_episodes):
     scores = []
     for _ in range(dev_episodes):
-        score, _ = episode(env, agent, N)
+        score = dev_episode(env, agent)
         scores.append(score)
+    print('AVG:' , sum(scores) / dev_episodes)
     return sum(scores) / dev_episodes
         
         
@@ -130,14 +143,15 @@ if __name__ == '__main__':
     parser.add_argument('env', type=str)
     parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--gamma', default=0.99, type=float)
-    parser.add_argument('--N', default=2048, type=int)
+    parser.add_argument('--N', default=1024, type=int)
     parser.add_argument('--n_epochs', default=10, type=int)
-    parser.add_argument('--n_episodes', default=20000,  type=int)
-    parser.add_argument('--alpha', default=0.0003, type=float)
+    parser.add_argument('--n_episodes', default=1000,  type=int)
+    parser.add_argument('--alpha', default=0.00008, type=float)
     parser.add_argument('--beta', default=0.0003, type=float)
     parser.add_argument('--policy_clip', default=0.3, type=float)
     parser.add_argument('--gae_lambda', default=0.95, type=float)
     parser.add_argument('--dev_episodes', default=50, type=int)
+    parser.add_argument('--ac_dim', default=128)
     parser.add_argument('--random', type=lambda x: x=='True', default=False)
     parser.add_argument('--entropy_bonus', type=lambda x: x=='True', default=False)
     args = parser.parse_args()
@@ -153,5 +167,6 @@ if __name__ == '__main__':
          args.gae_lambda,
          args.policy_clip,
          args.dev_episodes,
+         args.ac_dim,
          args.random,
          args.entropy_bonus)

@@ -11,7 +11,7 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
     parser.add_argument('executable', type=str, help='path to exec')
-    parser.add_argument('--num_episodes', type=int, default=10000, help='set number of training episodes')
+    parser.add_argument('--num_timesteps', type=int, default=100, help='set number of training episodes')
     args = parser.parse_args()
     
     env_name = args.executable
@@ -24,10 +24,10 @@ if __name__ == "__main__":
     os.makedirs(log_dir, exist_ok=True)
 
     model = PPO('MlpPolicy', env, verbose=1)
-    model.learn(total_timesteps=10000)
+    #model.learn(total_timesteps=args.num_timesteps)
     
     obs = env.reset()
-    for i in range(args.num_episodes):
+    for i in range(50):
         print(f'\nEPISODE:{i}\n')
         obs = env.reset()
         total, step, done = 0, 0, False
