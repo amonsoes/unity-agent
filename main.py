@@ -61,7 +61,10 @@ def main(environment,
             score = random_episode(env, num_actions)
             print(f'for {i}, score:{score}')
         else:
+            agent.learn_iters = 0
             score, avg_score = episode(env, agent, N)
+            env.score_history.append(score)
+            avg_score = np.mean(env.score_history[-100:])
             if avg_score > best_score:
                 best_score = avg_score
                 agent.save_models()
@@ -75,7 +78,7 @@ def main(environment,
     return dev_evaluation
 
 def episode(env, agent, N):
-    agent.learn_iters = 0
+    
     observation = env.reset()
     done = np.array([False])
     score = 0
