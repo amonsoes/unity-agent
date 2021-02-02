@@ -90,6 +90,7 @@ def episode(env, agent, N):
         if agent.n_steps % N == 0:
             #_, _, val = agent.choose_action(observation)
             #agent.learn(last_done=done_, last_val=val)
+            print('...learning...')
             agent.learn()
             agent.learn_iters += 1
         observation = observation_
