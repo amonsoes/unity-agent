@@ -83,7 +83,7 @@ class Agent:
         state = T.tensor([observation], dtype=T.float).to(self.actor.device)
         with T.no_grad():
             dist = self.actor(state)
-            action_vec = dist.sample().squeeze()
+            action_vec = dist.rsample().squeeze()
             value = self.critic(state).squeeze()
             log_probs = dist.log_prob(action_vec).squeeze()
 
@@ -109,7 +109,7 @@ class Agent:
     
     def predict(self, obs):
         dist = self.actor(obs)
-        return dist.loc
+        return dist.mean
 
     def learn(self):
         for _ in range(self.n_epochs):
