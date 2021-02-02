@@ -88,9 +88,9 @@ def episode(env, agent, N):
         score += reward
         agent.remember(observation, action, prob, val, reward, done)
         if agent.n_steps % N == 0:
-            _, _, val = agent.choose_action(observation)
-            
-            agent.learn(last_done=done_, last_val=val)
+            #_, _, val = agent.choose_action(observation)
+            #agent.learn(last_done=done_, last_val=val)
+            agent.learn()
             agent.learn_iters += 1
         observation = observation_
         done = done_

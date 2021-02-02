@@ -89,7 +89,7 @@ class Agent:
 
         return [i.item() for i in action_vec], [i.item() for i in log_probs], [value.item()]
 
-    def learn(self, last_done, last_val):
+    def learn(self):
         for _ in range(self.n_epochs):
             state_arr, action_arr, old_prob_arr, values, reward_arr, dones_arr, batches = self.memory.generate_batches()
 
