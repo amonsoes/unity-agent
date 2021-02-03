@@ -61,7 +61,7 @@ def main(environment,
     for i in range(n_episodes):
         if random_eps:
             score = random_episode(env, num_actions)
-            print('for {i}, score:{score}')
+            print(f'for {i}, score:{score}')
         else:
             observation = env.reset()
             done = np.array([False])
