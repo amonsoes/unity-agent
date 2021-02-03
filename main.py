@@ -42,7 +42,7 @@ def main(environment,
     observ_dim = env.observation_space.shape[0]
     env.score_history = []
     figure_file = 'plots/agent_vals.png'
-    
+    print(observ_dim)
     agent = a.Agent(n_actions=num_actions,
                 gamma=gamma,
                 batch_size=batch_size,
@@ -57,13 +57,12 @@ def main(environment,
     
     best_score = 0
     avg_score = 0
-    
+    agent.learn_iters = 0
     for i in range(n_episodes):
         if random_eps:
             score = random_episode(env, num_actions)
             print(f'for {i}, score:{score}')
         else:
-            agent.learn_iters = 0
             observation = env.reset()
             done = np.array([False])
             score = 0
