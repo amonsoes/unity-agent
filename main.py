@@ -35,11 +35,11 @@ def main(environment,
         os.mkdir('plots')
     
     env = UE(file_name=environment, seed=1, side_channels=[])
-    env = UnityToGymWrapper(env)
+    env = UnityToGymWrapper(env,allow_multiple_obs=True)
     env.reset()
     print('env loaded')
     num_actions = env.action_size
-    observ_dim = env.observation_space.shape[0]
+    observ_dim = env.observation_space.shape
     env.score_history = []
     figure_file = 'plots/agent_vals.png'
     print(observ_dim)
