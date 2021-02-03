@@ -64,7 +64,22 @@ def main(environment,
             print(f'for {i}, score:{score}')
         else:
             agent.learn_iters = 0
-            score, avg_score = episode(env, agent, N)
+            observation = env.reset()
+            done = np.array([False])
+            score = 0
+            while not done:
+                action, prob, val = agent.choose_action(observation)
+                action = np.clip(np.array(action), a_min=-1.0, a_max=1.0)
+                observation_, reward, done_, _ = env.step(action)
+                agent.n_steps += 1
+                score += reward
+                agent.remember(observation, action, prob, val, reward, done)
+                if agent.n_steps % N == 0:
+                    print('...learning...')
+                    agent.learn()
+                    agent.learn_iters += 1
+                observation = observation_
+                done = done_
             env.score_history.append(score)
             avg_score = np.mean(env.score_history[-100:])
             if avg_score > best_score:
@@ -78,7 +93,7 @@ def main(environment,
     dev_evaluation = dev_evaluate(env, agent, dev_episodes)
     plot_learning_curve(x, env.score_history, figure_file)
     return dev_evaluation
-
+'''
 def episode(env, agent, N):
     observation = env.reset()
     done = np.array([False])
@@ -102,7 +117,7 @@ def episode(env, agent, N):
     env.score_history.append(score)
     avg_score = np.mean(env.score_history[-100:])
     return score, avg_score
-
+'''
 def random_episode(env, num_actions):
     done = False
     total = 0
