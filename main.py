@@ -35,14 +35,14 @@ def main(environment,
         os.mkdir('plots')
     
     env = UE(file_name=environment, seed=1, side_channels=[])
-    env = UnityToGymWrapper(env)
+    env = UnityToGymWrapper(env,allow_multiple_obs=True)
     env.reset()
     print('env loaded')
     num_actions = env.action_size
-    observ_dim = env.observation_space.shape[0]
+    observ_dim = env.observation_space.shape
     env.score_history = []
     figure_file = 'plots/agent_vals.png'
-    
+    print(observ_dim)
     agent = a.Agent(n_actions=num_actions,
                 gamma=gamma,
                 batch_size=batch_size,
@@ -57,13 +57,12 @@ def main(environment,
     
     best_score = 0
     avg_score = 0
-    
+    agent.learn_iters = 0
     for i in range(n_episodes):
         if random_eps:
             score = random_episode(env, num_actions)
             print(f'for {i}, score:{score}')
         else:
-            agent.learn_iters = 0
             observation = env.reset()
             done = np.array([False])
             score = 0

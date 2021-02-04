@@ -1,5 +1,30 @@
 # Unity Agent
-
+### Configure a virtual Environment
+- set
+```
+$ python3 -m venv environment_name
+```
+- activate (Unix or Mac)
+```
+$ source environment_name/bin/activate
+```
+- activate (Windows)
+```
+$ environment_name\Scripts\activate.bat
+```
+- deactivate 
+```
+$ Source deactivate 
+```
+or (for anaconda)
+```
+$ conda deactivate
+```
+or 
+```
+§ deactive
+```
+See more in the [documentation](https://docs.python.org/3/tutorial/venv.html )
 ### Requirements
 
 see requirements.txt
