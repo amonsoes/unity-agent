@@ -1,8 +1,8 @@
 import argparse
 import matplotlib.pyplot as plot
 
-from a2c_cartpole.agent import TDA2CLearner
-from a2c_cartpole.gym_room import GymRoom
+from .baselines.a2c_cartpole.agent import TDA2CLearner
+from .baselines.a2c_cartpole.gym_room import GymRoom
 from collections import namedtuple
 
 SARSD = namedtuple('SARSD', ['state', 'action', 'reward', 'next_state', 'done'])

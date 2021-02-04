@@ -2,9 +2,11 @@ import numpy as np
 import argparse
 import os
 import torch as T
+import gym
 
 from ppo import agent as a
 from utils import plot_learning_curve
+
 from mlagents_envs.environment import UnityEnvironment as UE
 from gym_unity.envs import UnityToGymWrapper
 
@@ -34,11 +36,11 @@ def main(environment,
     if os.path.isdir('plots')==False:
         os.mkdir('plots')
     
-    env = UE(file_name=environment, seed=1, side_channels=[])
-    env = UnityToGymWrapper(env)
+
+    env = gym.make('Pendulum-v0').unwrapped
     env.reset()
     print('env loaded')
-    num_actions = env.action_size
+    num_actions = env.action_space
     observ_dim = env.observation_space.shape[0]
     env.score_history = []
     figure_file = 'plots/agent_vals.png'
@@ -63,14 +65,13 @@ def main(environment,
             score = random_episode(env, num_actions)
             print(f'for {i}, score:{score}')
         else:
-            agent.learn_iters = 0
             observation = env.reset()
             done = np.array([False])
             score = 0
             while not done:
                 action, prob, val = agent.choose_action(observation)
                 action_copy = action.squeeze().clone().detach().numpy()
-                action_copy = np.clip(action_copy, a_min=-1.0, a_max=1.0)
+                action_copy = np.clip(action_copy, a_min=-2.0, a_max=2.0)
                 observation_, reward, done_, _ = env.step(action_copy)
                 agent.n_steps += 1
                 score += reward

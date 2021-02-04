@@ -28,9 +28,10 @@ class ActorNetwork(nn.Module):
         state = self.seq(state)
         
         mu_vec = self.tanh(self.mu_out(state))
-        sigma_vec = self.softmax(self.sigma_out(state))
+        log_sigma_vec = self.tanh(self.sigma_out(state))
         
-        dist = Normal(mu_vec, sigma_vec)
+        
+        dist = Normal(mu_vec, log_sigma_vec.exp())
         # sigma can't be a negative value
         return dist
     
