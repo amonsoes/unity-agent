@@ -60,28 +60,10 @@ def main(environment,
     agent.learn_iters = 0
     for i in range(n_episodes):
         if random_eps:
-            score = random_episode(env, num_actions)
+            score = random_episode(env, num_actions) #random agent
             print(f'for {i}, score:{score}')
         else:
-            observation = env.reset()
-            done = np.array([False])
-            score = 0
-            while not done:
-                action, prob, val = agent.choose_action(observation)
-                action_copy = action.squeeze().clone().detach().numpy()
-                action_copy = np.clip(action_copy, a_min=-1.0, a_max=1.0)
-                observation_, reward, done_, _ = env.step(action_copy)
-                agent.n_steps += 1
-                score += reward
-                agent.remember(observation, action, prob, val, reward, done)
-                if agent.n_steps % N == 0:
-                    print('...learning...')
-                    agent.learn()
-                    agent.learn_iters += 1
-                observation = observation_
-                done = done_
-            env.score_history.append(score)
-            avg_score = np.mean(env.score_history[-100:])
+            score,avg_score=episode(env, agent, N) # agent use our algorithm
             if avg_score > best_score:
                 best_score = avg_score
                 agent.save_models()
@@ -93,22 +75,21 @@ def main(environment,
     dev_evaluation = dev_evaluate(env, agent, dev_episodes)
     plot_learning_curve(x, env.score_history, figure_file)
     return dev_evaluation
-'''
+
 def episode(env, agent, N):
+    agent.n_steps=0; # now we define n_step as: steps per episode  
     observation = env.reset()
     done = np.array([False])
     score = 0
     while not done:
         action, prob, val = agent.choose_action(observation)
-        action = np.clip(np.array(action), a_min=-1.0, a_max=1.0)
-        #print(action)
-        observation_, reward, done_, _ = env.step(action)
+        action_copy = action.squeeze().clone().detach().numpy()
+        action_copy = np.clip(action_copy, a_min=-2.0, a_max=2.0)
+        observation_, reward, done_, _ = env.step(action_copy)
         agent.n_steps += 1
         score += reward
         agent.remember(observation, action, prob, val, reward, done)
         if agent.n_steps % N == 0:
-            #_, _, val = agent.choose_action(observation)
-            #agent.learn(last_done=done_, last_val=val)
             print('...learning...')
             agent.learn()
             agent.learn_iters += 1
@@ -117,7 +98,7 @@ def episode(env, agent, N):
     env.score_history.append(score)
     avg_score = np.mean(env.score_history[-100:])
     return score, avg_score
-'''
+
 def random_episode(env, num_actions):
     done = False
     total = 0
