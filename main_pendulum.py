@@ -7,8 +7,6 @@ import gym
 from ppo import agent as a
 from utils import plot_learning_curve
 
-from mlagents_envs.environment import UnityEnvironment as UE
-from gym_unity.envs import UnityToGymWrapper
 
 def main(environment,
          N, 
@@ -43,7 +41,7 @@ def main(environment,
     num_actions = env.action_space
     observ_dim = env.observation_space.shape[0]
     env.score_history = []
-    figure_file = 'plots/agent_vals.png'
+    figure_file = 'plots/pendulum.png'
     
     agent = a.Agent(n_actions=num_actions,
                 gamma=gamma,
@@ -57,7 +55,7 @@ def main(environment,
                 policy_clip=policy_clip,
                 entropy_bonus=entropy_bonus)
     
-    best_score = 0
+    best_score = env.reward_range[0]
     avg_score = 0
     agent.learn_iters=0 # as global variable, summarize the learn_iters of entire training process
     for i in range(n_episodes):
