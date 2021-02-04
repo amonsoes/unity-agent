@@ -42,7 +42,7 @@ the following arguments have default values, however you can experiment by setti
 For the PPO optimized for Gym environment 'Pendulum-v0'
 
 ```
-python3 main-pendulum.py
+python3 main_pendulum.py
 ```
 
 For the unity ml-agent, for which training currently works, but fails to converge
