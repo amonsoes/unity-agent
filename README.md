@@ -1,30 +1,5 @@
 # Unity Agent
-### Configure a virtual Environment
-- set
-```
-$ python3 -m venv environment_name
-```
-- activate (Unix or Mac)
-```
-$ source environment_name/bin/activate
-```
-- activate (Windows)
-```
-$ environment_name\Scripts\activate.bat
-```
-- deactivate 
-```
-$ Source deactivate 
-```
-or (for anaconda)
-```
-$ conda deactivate
-```
-or 
-```
-§ deactive
-```
-See more in the [documentation](https://docs.python.org/3/tutorial/venv.html )
+
 ### Requirements
 
 see requirements.txt
@@ -64,6 +39,14 @@ the following arguments have default values, however you can experiment by setti
 
 ##### Usage
 
+For the PPO optimized for Gym environment 'Pendulum-v0'
+
+```
+python3 main-pendulum.py
+```
+
+For the unity ml-agent, for which training currently works, but fails to converge
+
 ```
 python3 main.py executable
 ```
@@ -75,18 +58,31 @@ python3 main.py executable
 - shuffle memories and sample batches
 - perform n_epochs of updates on each batch
 
-##### Hyperparameters
-
-Memory length T(should be much less than the length of episode), batch size, number of epochs, learning rate
+##### Hyperparameters for unity PPO
 
 - gamma: discount factor in the calculation of our advantages(typically use 0.99)
 - alpha: learning rate for actor
 - beta: learning rate for critic
 - policy_clip: 0.1/0.2, the PPO paper suggests 0.2
 - batch_size=64
-- N: the number of steps before we perform an update(2048)
+- N: the number of steps before we perform an update(2048) or the memory
 - n_epochs: the number of epochs (10)
 - gae_lambda: lambda parameter,which is the smoothing factor used in the GAE algorithm
+
+##### Hyperparameters for pendulum PPO
+
+- batch_size, default=32, type=int
+- gamma, default=0.9, type=float
+- N, default=1024, type=int
+- n_epochs, default=10, type=int
+- n_episodes, default=1000,  type=int
+- dev_episodes, default=50,  type=int
+- alpha, default=1e-4, type=float
+- beta, default=3e-4, type=float
+- policy_clip, default=0.2, type=float
+- ac_dim, type=int, default=128
+- max_grad_norm, type=float, default=0.5
+- show, type=bool, default=False
 
 ##### Generalized Advantage Estimation(GAE)
 
@@ -103,22 +99,7 @@ Memory length T(should be much less than the length of episode), batch size, num
 - Surrogate2: clip(ratio,1-policy.clip,1+policy.clip)*advantage
 
 
-
-### A2C Implementation Notes
-
-This is an a2c with temporal difference advantage for discrete baseline comparison
-
-##### Args:
-
-- env : the environment in which the agents learns
-- gamma : decay of future rewards
-- nr_outputs : nr of dimensions in the action space of the actor
-- alpha : lr of the actor
-- beta : lr of the critic
-- training_iter : how many training iters the agent does
-- hidden_dim : hidden size of the networks
-
-### Baseline Run
+### Baseline Run for Unity Execs
 
 to run the baseline you'll need the stable_baselines package. This has a few prerequisites.
 Follow these instructions:
@@ -142,18 +123,24 @@ after that:
 python3 baselines2.py path/to/exec --num_episodes
 ```
 
-### Hyperparameter Optimization
+### Hyperparameter Optimization Evoultionary Algorithm
+
 
 In genetic, there is the class functionality to find the best hyperparams for an env and agent.
 The best HP's will be saved at: **./best_hyperparams.txt**
 
+**This only works with the converging environment - PPO pendulum**
+
+
 ```
-python3 find_best_hyperparams.py species --pop_size 50 --cross_rate 0.3 --mut_rate 0.015 --elitism True --elite_size 3 --maximize True --gen_epochs 7
+python3 find_best_hyperparams.py PPO --pop_size 50 --cross_rate 0.3 --mut_rate 0.015 --elitism True --elite_size 3 --maximize True --gen_epochs 7
 ```
+
+Running this will take a long time
 
 #### args:
 
-- species : A2C or PPO
+- species : PPO
 - cross_rate : set with what prob individuals cross their genes
 - mut_rate : set with what prob individuals mutate
 - elitism : set if good indivs progress generations without tournament
@@ -175,6 +162,20 @@ A 3D unity continous environment from Unity ML-Agents.
 For every parameter, the actor networks builds a Normal Distribution on
 a mu and sigma, which are the outputs of the actor network in our PPO agent.
 
+
+### A2C Implementation Notes
+
+This is an a2c with temporal difference advantage for discrete baseline comparison
+
+##### Args:
+
+- env : the environment in which the agents learns
+- gamma : decay of future rewards
+- nr_outputs : nr of dimensions in the action space of the actor
+- alpha : lr of the actor
+- beta : lr of the critic
+- training_iter : how many training iters the agent does
+- hidden_dim : hidden size of the networks
 
 ### Unity Environment
 
@@ -226,6 +227,34 @@ chmod -R 755 /abs/path/to/UnityEnvironment
 where abs path to should be replaced with a path to your executable
 
 ### Resources
+
+
+##### Configure a virtual Environment
+- set
+```
+$ python3 -m venv environment_name
+```
+- activate (Unix or Mac)
+```
+$ source environment_name/bin/activate
+```
+- activate (Windows)
+```
+$ environment_name\Scripts\activate.bat
+```
+- deactivate 
+```
+$ Source deactivate 
+```
+or (for anaconda)
+```
+$ conda deactivate
+```
+or 
+```
+§ deactive
+```
+See more in the [documentation](https://docs.python.org/3/tutorial/venv.html )
 
 https://github.com/Unity-Technologies/ml-agents/blob/master/docs/ML-Agents-Overview.md
 

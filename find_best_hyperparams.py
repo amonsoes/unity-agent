@@ -1,10 +1,9 @@
 import argparse
 
 from genetic.tournament import GeneticAlgorithm
-from genetic.genome import A2CGenome, PPOGenome
+from genetic.genome import PPOGenome
 from genetic.population import Population
 
-from a2c_cartpole import utils
 
 def find_best_hyperparams(species, 
                           population_size, 
@@ -14,15 +13,16 @@ def find_best_hyperparams(species,
                           elite_size, 
                           maximize, 
                           generation_epochs):
-    
+    """
     if species in ('a2c', 'A2C', 'Actor-Critic'):
         population = Population(A2CGenome, 
                 size=population_size, 
                 crossover_rate=crossover_rate,
                 mutation_rate=mutation_rate,
                 maximize=maximize)
+    """
 
-    elif species in ('ppo', 'PPO', 'Proximal Policy Optimization'):
+    if species in ('ppo', 'PPO', 'Proximal Policy Optimization'):
         population = Population(PPOGenome, 
                 size=population_size, 
                 crossover_rate=crossover_rate,
@@ -46,9 +46,9 @@ if __name__ == '__main__':
     parser.add_argument('--pop_size', type=int, default=50, help='set population rate')
     parser.add_argument('--cross_rate', type=float, default=0.3, help='set crossover rate')
     parser.add_argument('--mut_rate', type=float, default=0.015, help='set mutation rate')
-    parser.add_argument('--elitism', type=utils.str2bool, default=True, help='set if best indivs get to live on')
+    parser.add_argument('--elitism', type=lambda x : x=='True', default=True, help='set if best indivs get to live on')
     parser.add_argument('--elite_size', type=int, default=3, help='set how many best indivs get to live on')
-    parser.add_argument('--maximize', type=utils.str2bool, default=True, help='should indivs be maximized or minimized')
+    parser.add_argument('--maximize', type=lambda x : x=='True', default=True, help='should indivs be maximized or minimized')
     parser.add_argument('--gen_epochs', type=int, default=7, help='number of generations')
     
     args = parser.parse_args()

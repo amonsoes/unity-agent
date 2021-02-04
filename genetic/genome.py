@@ -1,10 +1,12 @@
 import random
 
-from a2c_cartpole import main as a2c_main
-from a2c_cartpole import gym_room as gr
-from a2c_cartpole import agent as a2c
-import ppo
-import main as ppo_main
+#from baselines.a2c_cartpole import main as a2c_main
+#from baselines.a2c_cartpole import gym_room as gr
+#from baselines.a2c_cartpole import agent as a2c
+#import ppo
+#import main as ppo_main
+
+import main_pendulum
 
 # from ppo_cartpole import main as ppo_main
 # from ppo_cartpole import agent as ppo
@@ -60,7 +62,7 @@ class Genome:
         )
         individual_copy.fitness = self.fitness
         return individual_copy
-
+"""
 class A2CGenome(Genome):
     
     genome = {
@@ -91,20 +93,22 @@ class A2CGenome(Genome):
         _, evaluation = a2c_main.a2c_main(agent, A2CGenome.room, 1000, 50)
         self.fitness = evaluation
         return evaluation
+"""
     
-class PPOGenome:
+class PPOGenome(Genome):
     
     genome = {
-        'gamma': [0.99, 0.98, 0.97, 0.96, 0.95], 
-        'n_epochs':[5, 10, 12, 16, 20, 25, 30, 35], 
+        'gamma': [0.99, 0.98, 0.97, 0.96], 
+        'n_epochs':[3, 5, 7, 10], 
         'gae_lambda' : [0.90, 0.92, 0.94, 0.96, 0.98],
-        'memory_batchsize': [5, 10, 16, 32, 64, 128],
+        'batch_size': [16, 32, 64, 128],
         'policy_clip' : [0.1, 0.2, 0.3, 0.4],
-        'n_episodes' : [128, 256, 512, 700, 900],
-        'N' : [3, 5, 10, 15]
+        'N' : [512, 1024, 2048],
+        'ac_size' : [64, 128, 256, 512],
+        'alpha': [1e-3, 1e-4, 1e-5, 1e-6],
+        'beta' : [3e-4, 3e-3, 3e-2, 3e-5]
         }
     
-    room = gr.GymRoom('CartPole-v1')
     
     def __init__(self,  genes, crossover_rate, mutation_rate):
         super().__init__(genes, crossover_rate, mutation_rate)
@@ -115,44 +119,22 @@ class PPOGenome:
         return cls(genes, crossover_rate, mutation_rate)
     
     def set_fitness(self):
-        agent = ppo.Agent(n_actions=PPOGenome.room.num_actions_available(),
-                          input_dims=PPOGenome.room.env.observation_space.shape[0],
-                          gamma=self.genes['gamma'],
-                          gae_lambda=genes['gae_lambda'],
-                          policy_clip=genes['policy_clip'],
-                          batch_size=genes['memory_batchsize'],
-                          n_epochs=genes['n_epochs'])
-                            
-        evaluation = ppo_main.main(PPOGenome.room,
-                                   genes['N'],
-                                   n_epochs=genes['n_epochs'],
-                                   batch_size=genes['memory_batchsize'],
-                                   alpha=0.0,
-                                   beta=0.0,
-                                   n_episodes=genes['n_episodes'],
-                                   gae_lambda=genes['gae_lambda'],
-                                   policy_clip=genes['policy_clip'],
-                                   dev_episodes=50)
+        evaluation = main_pendulum.main(
+            n_episodes=1000,
+            dev_episodes=50,
+            batch_size=self.genes['batch_size'],
+            gamma=self.genes['gamma'],
+            n_epochs=self.genes['n_epochs'],
+            alpha=self.genes['alpha'], 
+            beta=self.genes['beta'], 
+            policy_clip=self.genes['policy_clip'], 
+            ac_dim=self.genes['ac_size'],
+            N=self.genes['N'],
+            max_grad_norm=0.5,
+            show=False)
         self.fitness = evaluation
+        
         return evaluation
         
 if __name__ == '__main__':
-    
-    genes = {'gamma' : 0.99, 'alpha' : 0.0005, 'beta': 0.001, 'hidden_dim': 64}
-    genes2 = {'gamma' : 0.98, 'alpha' : 0.0001, 'beta': 0.003, 'hidden_dim': 128}
-    individual = A2CGenome(genes, 0.5, 0.5)
-    individual2 = A2CGenome(genes2, 0.5, 0.5) 
-    
-    # test reproduce
-    individual_repr = individual.reproduce(individual2)
-    print('reproduction sucessfully tested...')
-    
-    # test cross
-    indiv_copy = individual.copy()
-    individual.crossover(individual2)
-    print('crossover sucessfully tested...')
-    
-    # test mutate
-    indiv_copy = individual.copy()
-    individual.mutate()
-    print('mutate sucessfully tested...')
+    print('genome.py')
