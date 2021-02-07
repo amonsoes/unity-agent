@@ -34,6 +34,8 @@ python3 main.py executable
 
 the following arguments have default values, however you can experiment by setting them in the CLI
 
+unity env PPO:
+
 - batch_size - batch size for the agent update
 - gamma - discout factor for episodes
 - N - agent update interval
@@ -46,10 +48,27 @@ the following arguments have default values, however you can experiment by setti
 - dev_episodes - development mean
 - random - True if agent should be random insteaf of PPO, default is False
 
+
+pendulum PPO:
+
+- batch_size, default=32, type=int
+- gamma, default=0.9, type=float
+- N, default=1024, type=int
+- n_epochs, default=10, type=int
+- n_episodes, default=1000,  type=int
+- dev_episodes, default=50,  type=int
+- alpha, default=1e-4, type=float
+- beta, default=3e-4, type=float
+- policy_clip, default=0.2, type=float
+- ac_dim, type=int, default=128
+- max_grad_norm, type=float, default=0.5
+- show, type=bool, default=False - render the training.
+
+
 ### Agents
 
 - PPO Agent
-- asyncronous A2C algorithm with temporal difference advantage.
+- asyncronous A2C algorithm with temporal difference advantage.(for baseline comparison in discrete domain)
 
 ### PPO Implementation Notes:
 
@@ -73,32 +92,6 @@ python3 main.py executable
 - the values of those states according to critic network and the log of the probability selecting those actions
 - shuffle memories and sample batches
 - perform n_epochs of updates on each batch
-
-##### Hyperparameters for unity PPO
-
-- gamma: discount factor in the calculation of our advantages(typically use 0.99)
-- alpha: learning rate for actor
-- beta: learning rate for critic
-- policy_clip: 0.1/0.2, the PPO paper suggests 0.2
-- batch_size=64
-- N: the number of steps before we perform an update(2048) or the memory
-- n_epochs: the number of epochs (10)
-- gae_lambda: lambda parameter,which is the smoothing factor used in the GAE algorithm
-
-##### Hyperparameters for pendulum PPO
-
-- batch_size, default=32, type=int
-- gamma, default=0.9, type=float
-- N, default=1024, type=int
-- n_epochs, default=10, type=int
-- n_episodes, default=1000,  type=int
-- dev_episodes, default=50,  type=int
-- alpha, default=1e-4, type=float
-- beta, default=3e-4, type=float
-- policy_clip, default=0.2, type=float
-- ac_dim, type=int, default=128
-- max_grad_norm, type=float, default=0.5
-- show, type=bool, default=False
 
 ##### Generalized Advantage Estimation(GAE)
 
