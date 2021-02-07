@@ -119,6 +119,7 @@ class PPOGenome(Genome):
         return cls(genes, crossover_rate, mutation_rate)
     
     def set_fitness(self):
+        print(f"\n\nEvaluating for {self.genes}\n\n")
         evaluation = main_pendulum.main(
             n_episodes=1000,
             dev_episodes=50,
@@ -132,6 +133,8 @@ class PPOGenome(Genome):
             N=self.genes['N'],
             max_grad_norm=0.5,
             show=False)
+        if evaluation != evaluation:
+            evaluation = -2000
         self.fitness = evaluation
         
         return evaluation
