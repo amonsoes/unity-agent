@@ -1,5 +1,13 @@
 # Unity Agent
 
+
+This is our Project ASP. Currently we have a PPO optimized for:
+
+* the unity environment
+* the pendulum environment
+
+Due to lack of time, we haven't had the time to let the unity environment converge by hyperparameter optimization. However we do have a script on hyperparameter optimization and used it on the pendulum environment (because it's much faster). We decided to hand in a learning PPO for the unity environment, for which we don't know of it converges, as well as a working slightly altered PPO for pendulum which converges, just to show we could solve a continous environment. 
+
 ### Requirements
 
 see requirements.txt
@@ -9,6 +17,14 @@ pip3 install -r requirements.txt
 ```
 
 ### Main Program
+
+For the PPO optimized for Gym environment 'Pendulum-v0'
+
+```
+python3 main_pendulum.py
+```
+
+For the unity ml-agent,
 
 ```
 python3 main.py executable
@@ -45,7 +61,7 @@ For the PPO optimized for Gym environment 'Pendulum-v0'
 python3 main_pendulum.py
 ```
 
-For the unity ml-agent, for which training currently works, but fails to converge
+For the unity ml-agent, for which training currently works, but does not converge
 
 ```
 python3 main.py executable
