@@ -7,6 +7,7 @@ import random
 #import main as ppo_main
 
 import main_pendulum
+import main as main_unity
 
 # from ppo_cartpole import main as ppo_main
 # from ppo_cartpole import agent as ppo
@@ -99,8 +100,7 @@ class PPOGenome(Genome):
     
     genome = {
         'gamma': [0.99, 0.98, 0.97, 0.96], 
-        'n_epochs':[3, 5, 7, 10], 
-        'gae_lambda' : [0.90, 0.92, 0.94, 0.96, 0.98],
+        'n_epochs':[3, 5, 7, 10],
         'batch_size': [16, 32, 64, 128],
         'policy_clip' : [0.1, 0.2, 0.3, 0.4],
         'N' : [512, 1024, 2048],
@@ -138,6 +138,51 @@ class PPOGenome(Genome):
         self.fitness = evaluation
         
         return evaluation
-        
+
+
+class UnityPPOGenome(Genome):
+    
+    genome = {
+        'gamma': [0.99, 0.98, 0.97, 0.96], 
+        'n_epochs':[3, 5, 7, 10],
+        'gae_lambda' : [0.90, 0.92, 0.94, 0.96, 0.98],
+        'batch_size': [16, 32, 64, 128],
+        'policy_clip' : [0.1, 0.2, 0.3, 0.4],
+        'N' : [512, 1024, 2048],
+        'ac_size' : [64, 128, 256, 512],
+        'alpha': [1e-3, 1e-4, 1e-5, 1e-6],
+        'beta' : [3e-4, 3e-3, 3e-2, 3e-5]
+        }
+    
+    
+    def __init__(self,  genes, crossover_rate, mutation_rate):
+        super().__init__(genes, crossover_rate, mutation_rate)
+    
+    @classmethod
+    def random_init(cls, crossover_rate, mutation_rate):
+        genes = {k:random.choice(cls.genome[k]) for k in cls.genome.keys()}
+        return cls(genes, crossover_rate, mutation_rate)
+    
+    def set_fitness(self):
+        print(f"\n\nEvaluating for {self.genes}\n\n")
+        evaluation = main_unity.main(
+            environment="./executables/3dball/3Dball_linux/3Dball_linux.x86",
+            gae_lambda=self.genes['gae_lambda'],
+            n_episodes=2500,
+            dev_episodes=50,
+            batch_size=self.genes['batch_size'],
+            gamma=self.genes['gamma'],
+            n_epochs=self.genes['n_epochs'],
+            alpha=self.genes['alpha'], 
+            beta=self.genes['beta'], 
+            policy_clip=self.genes['policy_clip'], 
+            ac_dim=self.genes['ac_size'],
+            N=self.genes['N'],
+            random_eps=False,
+            entropy_bonus=True,
+            )
+        if evaluation != evaluation:
+            evaluation = -2000
+        self.fitness = evaluation
 if __name__ == '__main__':
     print('genome.py')

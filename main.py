@@ -77,14 +77,13 @@ def main(environment,
     return dev_evaluation
 
 def episode(env, agent, N):
-    agent.n_steps=0; # now we define n_step as: steps per episode  
     observation = env.reset()
     done = np.array([False])
     score = 0
     while not done:
         action, prob, val = agent.choose_action(observation)
         action_copy = action.squeeze().clone().detach().numpy()
-        action_copy = np.clip(action_copy, a_min=-2.0, a_max=2.0)
+        action_copy = np.clip(action_copy, a_min=-1.0, a_max=1.0)
         observation_, reward, done_, _ = env.step(action_copy)
         agent.n_steps += 1
         score += reward
@@ -115,7 +114,7 @@ def dev_episode(env, agent):
     total = 0
     done = False
     while not done:
-        action = agent.predict(T.tensor(observation))
+        action, _, _ = agent.choose_action(T.tensor(observation))
         action = np.clip(action.detach().numpy(), -1.0, 1.0)
         observation, reward, done, _ = env.step(action)
         total += reward

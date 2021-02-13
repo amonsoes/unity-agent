@@ -1,4 +1,5 @@
 import random
+import os
 
 class GeneticAlgorithm:
 
@@ -16,11 +17,23 @@ class GeneticAlgorithm:
             self.generation += 1
 
     def evolve_population(self):
-        print("Evaluating generation #{}...\n\n".format(self.generation))
-        fittest = self.population.get_fittest()[0]
-        print("Fittest individual is: \n")
-        print(fittest.genes)
-        print("Fitness value is: {}\n".format(round(fittest.fitness, 4)))
+        
+        if os.path.exists('./fittest.txt'):
+            append_write = 'a' # append if already exists
+        else:
+            append_write = 'w' # make a new file if not
+        
+        with open('./fittest.txt', append_write) as f:
+            
+            print("Evaluating generation #{}...\n\n".format(self.generation))
+            f.write("Evaluating generation #{}...\n\n".format(self.generation))
+            fittest = self.population.get_fittest()[0]
+            print("Fittest individual is: \n")
+            f.write("Fittest individual is: \n{}".format(fittest.genes))
+            print(fittest.genes)
+            print("\nFitness value is: {}\n".format(round(fittest.fitness, 4)))
+            f.write("\nFitness value is: {}\n".format(round(fittest.fitness, 4)))
+            
         new_population = self.population.__class__(self.population.species, indiv_list=[], maximize=self.population.maximize)
         if self.elitism:
             [new_population.add_individual(i) for i in self.population.get_fittest(self.elite_size)]
@@ -36,7 +49,10 @@ class GeneticAlgorithm:
                 self.population[i] for i in random.sample(range(self.population.population_size), self.tournament_size)
             ], maximize=self.population.maximize
         )
-        return tournament.get_fittest()[0]
+        fittest = tournament.get_fittest()[0]
+        
+        return fittest
+        
 
 if __name__ == '__main__':
     pass

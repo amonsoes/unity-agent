@@ -2,6 +2,7 @@ import argparse
 
 from genetic.tournament import GeneticAlgorithm
 from genetic.genome import PPOGenome
+from genetic.genome import UnityPPOGenome
 from genetic.population import Population
 
 
@@ -28,6 +29,13 @@ def find_best_hyperparams(species,
                 crossover_rate=crossover_rate,
                 mutation_rate=mutation_rate,
                 maximize=maximize)
+    elif species in ('unityppo'):
+        population = Population(UnityPPOGenome, 
+                size=population_size, 
+                crossover_rate=crossover_rate,
+                mutation_rate=mutation_rate,
+                maximize=maximize)
+        
     else:
         assert argparse.ArgumentError('WRONG INPUT FOR SPECIES. SET TO PPO OR A2C')
         population = None

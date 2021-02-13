@@ -56,7 +56,7 @@ def main(n_episodes,
             
         reward_run = reward_run * 0.9 + score * 0.1 
         print(f"EPS {e}: {reward_run}")       
-        if reward_run > -200 or e > 650:
+        if reward_run > -100 or e > 650:
             if reward_run > 200:
                 print("\n\n ENV SOLVED \n\n")
             break

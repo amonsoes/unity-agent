@@ -1,0 +1,35 @@
+Evaluating generation #1...
+
+Fittest individual is: 
+{'gamma': 0.97, 'n_epochs': 7, 'gae_lambda': 0.96, 'batch_size': 16, 'policy_clip': 0.1, 'N': 1024, 'ac_size': 512, 'alpha': 0.001, 'beta': 0.0003}
+Fitness value is: -313.3205
+Evaluating generation #2...
+
+Fittest individual is: 
+{'gamma': 0.97, 'n_epochs': 5, 'gae_lambda': 0.98, 'batch_size': 16, 'policy_clip': 0.1, 'N': 512, 'ac_size': 256, 'alpha': 0.001, 'beta': 0.003}
+Fitness value is: -310.2382
+Evaluating generation #3...
+
+Fittest individual is: 
+{'gamma': 0.96, 'n_epochs': 7, 'gae_lambda': 0.96, 'batch_size': 16, 'policy_clip': 0.3, 'N': 1024, 'ac_size': 64, 'alpha': 0.001, 'beta': 0.003}
+Fitness value is: -309.9078
+Evaluating generation #4...
+
+Fittest individual is: 
+{'gamma': 0.97, 'n_epochs': 7, 'gae_lambda': 0.92, 'batch_size': 16, 'policy_clip': 0.1, 'N': 1024, 'ac_size': 512, 'alpha': 0.001, 'beta': 0.0003}
+Fitness value is: -306.9671
+Evaluating generation #5...
+
+Fittest individual is: 
+{'gamma': 0.97, 'n_epochs': 7, 'gae_lambda': 0.96, 'batch_size': 16, 'policy_clip': 0.1, 'N': 1024, 'ac_size': 512, 'alpha': 0.001, 'beta': 0.003}
+Fitness value is: -306.5603
+Evaluating generation #6...
+
+Fittest individual is: 
+{'gamma': 0.97, 'n_epochs': 7, 'gae_lambda': 0.96, 'batch_size': 16, 'policy_clip': 0.1, 'N': 1024, 'ac_size': 512, 'alpha': 0.001, 'beta': 0.003}
+Fitness value is: -306.5603
+Evaluating generation #7...
+
+Fittest individual is: 
+{'gamma': 0.97, 'n_epochs': 7, 'gae_lambda': 0.96, 'batch_size': 16, 'policy_clip': 0.1, 'N': 1024, 'ac_size': 512, 'alpha': 0.001, 'beta': 0.003}
+Fitness value is: -306.5603
