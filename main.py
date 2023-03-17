@@ -63,10 +63,19 @@ def main(environment,
             score = random_episode(env, num_actions) #random agent
             print(f'for {i}, score:{score}')
         else:
-            score,avg_score=episode(env, agent, N) # agent use our algorithm
+            score, avg_score = episode(env, agent, N) # agent use our algorithm
             if avg_score > best_score:
                 best_score = avg_score
                 agent.save_models()
+            if avg_score > 50.0:
+                print('ENV BEATEN')
+                break
+            if i == 10:
+                original_avg = avg_score
+            if i == 1000:
+                if avg_score <= original_avg+0.2:
+                    print('no substantial learning.... ==> ABORT')
+                    break    
             print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score,
                     'time_steps', agent.n_steps, 'learning_steps', agent.learn_iters)
     
@@ -114,7 +123,7 @@ def dev_episode(env, agent):
     total = 0
     done = False
     while not done:
-        action, _, _ = agent.choose_action(T.tensor(observation))
+        action, _, _ = agent.choose_action(observation)
         action = np.clip(action.detach().numpy(), -1.0, 1.0)
         observation, reward, done, _ = env.step(action)
         total += reward
@@ -149,7 +158,7 @@ if __name__ == '__main__':
     parser.add_argument('--beta', default=0.01, type=float)
     parser.add_argument('--policy_clip', default=0.2, type=float)
     parser.add_argument('--gae_lambda', default=0.95, type=float)
-    parser.add_argument('--dev_episodes', default=50, type=int)
+    parser.add_argument('--dev_episodes', default=1, type=int)
     parser.add_argument('--ac_dim', type=int, default=128)
     parser.add_argument('--random', type=lambda x: x=='True', default=False)
     parser.add_argument('--entropy_bonus', type=lambda x: x=='True', default=False)
