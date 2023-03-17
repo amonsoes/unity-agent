@@ -75,7 +75,7 @@ def main(environment,
             if i == 1000:
                 if avg_score <= original_avg+0.2:
                     print('no substantial learning.... ==> ABORT')
-                    break    
+                    break       
             print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score,
                     'time_steps', agent.n_steps, 'learning_steps', agent.learn_iters)
     
